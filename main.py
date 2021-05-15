@@ -51,7 +51,7 @@ semilla_modal_fase2 = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader("Establecer Semilla"),
+                dbc.ModalHeader("Establecer Semilla Para El Sorteo De Los Boletos"),
                 dbc.ModalBody(children=[
                     dbc.Form(id='semilla-modal-form',
                         children=[
@@ -168,7 +168,7 @@ tabla_participantes_fase2 = dash_table.DataTable(
 
     style_cell={
         'text_align':'center',
-        'minWidth': 75, 'maxWidth': 200,
+        'minWidth': 75, 'maxWidth': 75, 'width':75,
         'whiteSpace': 'pre-line',
         'height': 'auto',
     },
@@ -181,7 +181,8 @@ tabla_participantes_fase2 = dash_table.DataTable(
     style_cell_conditional=[
         {
             'if': {'column_id': 'boletos'},
-            'textAlign': 'left'
+            'textAlign': 'left',
+            'width':200
         }
     ],
     style_header={
@@ -237,47 +238,6 @@ tabla_boletos_fase2 = dash_table.DataTable(
     },
     fixed_rows={'headers': True},
     style_table={'height': 200},
-)
-
-# Tabla para la pila de boletos ordenados (Fase 1)
-tabla_pila_boletos_fase1 = dash_table.DataTable(
-    id='tabla-pila-boletos-fase1',
-    columns=[],
-    merge_duplicate_headers=True,
-    data=None,
-    style_cell={
-        'minWidth': 40, 'maxWidth': 40, 'width': 40,
-        'text_align':'center'
-    },
-    style_header={
-        'backgroundColor': 'white',
-        'color': 'white'
-    },
-    fixed_rows={'headers': True},
-    #style_table={'height': 1500, 'overflowY':'auto'},
-    css=[{"selector": "table", "rule": "width: 100%;"},{"selector": ".dash-spreadsheet.dash-freeze-top, .dash-spreadsheet .dash-virtualized", "rule": "max-height: 800px;"}]
-
-)
-
-# Tabla para la pila de boletos (Fase 2)
-tabla_pila_boletos_fase2 = dash_table.DataTable(
-    id='tabla-pila-boletos-fase2',
-    columns=[],
-    merge_duplicate_headers=True,
-    data=None,
-    style_cell={
-        'minWidth': 40, 'maxWidth': 40, 'width': 40,
-        'text_align':'center'
-    },
-    style_header={
-        'backgroundColor': 'white',
-        'color': 'white'
-    },
-    style_data_conditional=[],
-    fixed_rows={'headers': True},
-    #style_table={'height': 1500, 'overflowY':'auto'},
-    css=[{"selector": "table", "rule": "width: 100%;"},{"selector": ".dash-spreadsheet.dash-freeze-top, .dash-spreadsheet .dash-virtualized", "rule": "max-height: 800px;"}]
-
 )
 
 # ***************************** PÁGINA PRINCIPAL ******************************
@@ -391,8 +351,7 @@ app.layout = html.Div([
             ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
             
             html.Div([
-                tabla_pila_boletos_fase1,
-            ], style={'text-align':'center', 'width':'100%'}),
+            ], style={"position":"relative", "height":"800px", "overflow":"auto", "display":"block", "justify":"center"}, id='div-pila-datos-fase1'),
         ])
     ], style={"margin": "auto","width": "100%", 'padding':'1em', 'display':'none'}),
 
@@ -430,11 +389,13 @@ app.layout = html.Div([
 
             dbc.Col([
                 html.Div([
-                    html.H3('PARTICIPANTE ACTUAL', style={'text-align':'center', 'padding':'1em'}),
+                    html.H3('PARTICIPANTE ACTUAL', style={'text-align':'center'}),
+                    html.H3(children=[], style={'text-align':'center'}, 
+                            id='participantes-restantes-label'),
                     
                     tabla_sorteo_fase2,
 
-                    html.H3('LISTA DE BOLETOS DEL PARTICIPANTE ACTUAL', style={'text-align':'center', 'padding':'1em'}),
+                    html.H3('LISTA DE BOLETOS DEL PARTICIPANTE ACTUAL', style={'text-align':'center'}),
 
                     tabla_boletos_fase2,
 
@@ -446,14 +407,16 @@ app.layout = html.Div([
             ],md=6)
             
         ]),
+        
+        html.Div([
+            html.H3('PILA DE BOLETOS MEZCLADOS', style={'text-align':'center', 'padding':'1em'}),
+            
+        ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
+        
+        html.Div([
+        ], style={"position":"relative", "height":"800px", "overflow":"auto", "display":"block", "justify":"center", "margin": "0 auto", "width": "95%"}, id='div-pila-datos-fase2'),
+ 
 
-        dbc.Row([
-            html.Div([
-                html.H3('PILA DE BOLETOS MEZCLADOS', style={'text-align':'center', 'padding':'1em'}),
-                tabla_pila_boletos_fase2,
-                
-            ], style={"margin": "auto","width": "85%", 'padding':'1em'})  
-        ])
     ], style={'display':"none"})
 ])
 
@@ -476,7 +439,7 @@ def cambiarFase(url):
         return {'display':'none'}, {"margin": "auto","width": "85%", 'padding':'1em'}, {'display':'none'}, {"font-weight": "1000", 'color':'white'}, {}, {}
     elif url == '/fase2':
         return {'display':'none'}, {'display':'none'}, {}, {}, {"font-weight": "1000", 'color':'white'}, {}
-    elif url == '/page3':
+    elif url == '/fase3':
         return '/'
 
     # Objeto para almacenar las columnas de la tabla de la pila de boletos
@@ -491,19 +454,16 @@ def cambiarFase(url):
     [Output('tabla-participantes-fase1', 'data'), Output('info-tabla-participantes-fase1', 'data'),
      Output('total-participantes-label', 'children'), Output('total-boletos-label', 'children'),
      Output('info-total-participantes', 'data'), Output('info-total-boletos', 'data'),
-     Output('tabla-pila-boletos-fase1', 'columns'), Output('tabla-pila-boletos-fase1', 'data'),
-     Output('info-columnas-tabla-pila-boletos', 'data')],
+     Output('div-pila-datos-fase1', 'children')],
 
     Input('link-fase1', 'n_clicks'),
 
     [State('info-tabla-participantes-fase1', 'data'), State('info-total-participantes', 'data'), 
-     State('info-total-boletos', 'data'), State('tabla-pila-boletos-fase1', 'columns'), 
-     State('tabla-pila-boletos-fase1', 'data'), State('info-columnas-tabla-pila-boletos', 'data'),
-     State('info-num-columnas-pila-boletos', 'data')],
+     State('info-total-boletos', 'data'), State('info-num-columnas-pila-boletos', 'data'),
+     State('div-pila-datos-fase1', 'children')],
 )
-def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
-                     total_boletos, cols_tabla_pila_boletos_fase1, data_tabla_pila_boletos_fase1,
-                     info_columnas_tabla, n_cols):
+def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes, total_boletos, 
+                     n_cols, pila_datos_children):
     if link_fase1:
         # Si no tenemos una tabla, entonces la creamos y calculamos los totales de boletos y
         # participantes
@@ -538,22 +498,25 @@ def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
             boletos = [str(i).zfill(n_ceros) for i in range(1, n_boletos+1)]
             # Se rellenan al final con datos en blanco
             boletos += [' ' for _ in range(num_completar)]
-            # Se les da la dimensión deseada (num_renglonesx100)
-            boletos = np.array(boletos).reshape(num_renglones, n_cols)
-            # Se crea un dataFrame
-            df_boletos = pd.DataFrame(index=range(num_renglones), columns=range(n_cols), data=boletos)
-            print(df_boletos)
 
-            # ----- Generación de las columnas y los datos de la pila de boletos -----
-            columnas_pila_boletos = [{'name':f'{i}', 'id':f'{i}'} for i in range(0, n_cols)]
-            datos_pila_boletos = df_boletos.to_dict('records')
+            # Se genera una tabla
+            renglones = []
+            i = 0
+            for _ in range(num_renglones):
+                renglon = html.Tr(children=[])
+                for _ in range(n_cols):
+                    renglon.children.append(html.Td(boletos[i], style={'min-width': "50px", 'max-width': "50px", 'width': "50px", 'text-align':'center'}))
+                    i += 1
+                renglones.append(renglon)
+            
+            table_body = html.Tbody(renglones)
+            table = dbc.Table(table_body, bordered=True)
 
-            return data_participantes, data_participantes, n_participantes, n_boletos, n_participantes, n_boletos, columnas_pila_boletos, datos_pila_boletos, columnas_pila_boletos
+
+            return data_participantes, data_participantes, n_participantes, n_boletos, n_participantes, n_boletos, table
         else:
             print("YA EXISTE TODO, SE VA A ENVIAR DIRECTAMENTE")
-            print(total_participantes)
-            print(total_boletos)
-            return tabla_participantes_fase1, tabla_participantes_fase1, total_participantes, total_boletos, total_participantes, total_boletos, cols_tabla_pila_boletos_fase1, data_tabla_pila_boletos_fase1, info_columnas_tabla
+            return dash.no_update
     else:
         return dash.no_update
 
@@ -611,7 +574,7 @@ def actualizarSemilla(link_fase2, ok_btn_modal_semilla, modal_childrens, info_se
             return semilla, semilla
         elif boton == 'link-fase2':
             print("se mantiene la semilla")
-            return info_semilla, info_semilla
+            return dash.no_update
     else:
         return dash.no_update
 
@@ -619,18 +582,17 @@ def actualizarSemilla(link_fase2, ok_btn_modal_semilla, modal_childrens, info_se
 #       realizó exitosamente. Además, se crea la pila de boletos mezclados
 @app.callback(
     [Output('afirmacion-sorteo-boletos-modal', 'is_open'), Output('sorteo-boletos', 'data'),
-     Output('info-pila-boletos-mezclados', 'data'), Output('tabla-pila-boletos-fase2', 'columns'), 
-     Output('tabla-pila-boletos-fase2', 'data')],
+     Output('div-pila-datos-fase2', 'children'), Output('sorteo-boletos-btn', 'disabled'),
+     Output('sorteo-boletos-btn', 'children')],
 
     [Input('sorteo-boletos-btn', 'n_clicks'), Input('ok-afirmacion-sorteo-boletos-btn-modal', 'n_clicks')],
 
     [State('info-semilla', 'data'), State('sorteo-boletos', 'data'), 
      State('info-tabla-participantes-fase1', 'data'), State('info-num-columnas-pila-boletos', 'data'),
-     State('tabla-pila-boletos-fase2', 'columns'), State('tabla-pila-boletos-fase2', 'data')]
+     State('div-pila-datos-fase2', 'children')]
 )
 def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla, sorteo_boletos,
-                   info_tabla_participantes, n_cols, columnas_pila_boletos_mezclados,
-                   datos_pila_boletos_mezclados):
+                   info_tabla_participantes, n_cols, pila_datos_children):
     ctx = dash.callback_context
 
     if ctx.triggered:
@@ -651,19 +613,24 @@ def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla
 
             # Se rellenan, al final, los boletos mezclados con datos en blanco
             boletos = pila_boletos_mezclados + [' ' for _ in range(num_completar)]
-            # Se les da la dimensión deseada (num_renglonesx100)
-            boletos = np.array(boletos).reshape(num_renglones, n_cols)
-            # Se crea un dataFrame
-            df_boletos = pd.DataFrame(index=range(num_renglones), columns=range(n_cols), data=boletos)
+            
+            # Se genera una tabla
+            renglones = []
+            i = 0
+            for _ in range(num_renglones):
+                renglon = html.Tr(children=[])
+                for _ in range(n_cols):
+                    renglon.children.append(html.Td(boletos[i], style={'min-width': "50px", 'max-width': "50px", 'width': "50px", 'text-align':'center'}))
+                    i += 1
+                renglones.append(renglon)
+            
+            table_body = html.Tbody(renglones)
+            table = dbc.Table(table_body, bordered=True, id='tabla-pila-boletos-fase2')
 
-            # ----- Generación de las columnas y los datos de la pila de boletos -----
-            columnas_pila_boletos = [{'name':f'{i}', 'id':f'{i}'} for i in range(0, n_cols)]
-            datos_pila_boletos = df_boletos.to_dict('records')
-
-            return True, df_sorteo.to_dict('records'), datos_pila_boletos, columnas_pila_boletos, datos_pila_boletos
+            return True, df_sorteo.to_dict('records'), table, True, "Los boletos ya se han mezclado"
         elif boton == 'ok-afirmacion-sorteo-boletos-btn-modal':
             print("OK")
-            return False, sorteo_boletos, datos_pila_boletos_mezclados, columnas_pila_boletos_mezclados, datos_pila_boletos_mezclados 
+            return False, sorteo_boletos, pila_datos_children, True, "Los boletos ya se han mezclado"
     else:
         return dash.no_update
 
@@ -672,13 +639,15 @@ def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla
 @app.callback(
     [Output('tabla-participantes-fase2', 'data'), Output('idx-participante-sorteo-boletos', 'data'),
      Output('tabla-participante-actual', 'data'), Output('tabla-boletos-participante-actual', 'data'),
-     Output('tabla-pila-boletos-fase2', 'style_data_conditional')],
+     Output('tabla-pila-boletos-fase2', 'children'), Output('participantes-restantes-label', 'children'),
+     Output('siguiente-btn', 'disabled'), Output('siguiente-btn', 'children')],
     Input('siguiente-btn', 'n_clicks'),
     [State('idx-participante-sorteo-boletos', 'data'), State('sorteo-boletos', 'data'),
      State('tabla-participantes-fase2','data'), State('info-num-columnas-pila-boletos', 'data'),
-     State('tabla-pila-boletos-fase2', 'style_data_conditional')]
+     State('tabla-pila-boletos-fase2', 'children'), State('info-total-participantes', 'data')]
 )
-def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tabla_participantes, n_cols, estilo_casillas_ocupadas):
+def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tabla_participantes, 
+                         n_cols, pila_datos_children, total_participantes):
     # Convertimos a dataFrame la info del sorteo
     if siguiente_btn:
         df_sorteo = pd.DataFrame.from_dict(data_sorteo)
@@ -688,23 +657,12 @@ def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tab
 
         # Se edita el formato de los boletos para la tabla de los participantes y 
         # la tabla de los boletos
-        i = 0
-        j = 0
+        
         str_boletos = ""
-        str_boletos2 = ""
         for boleto in participante_actual['boletos']:
-            if i == 5:
-                str_boletos += "\n"
-                i = 0
-
-            if j == 14:
-                str_boletos2 += "\n"
-                j = 0
-
             str_boletos += boleto + ", "
-            str_boletos2 += boleto + ", "
-            i += 1
-            j += 1
+            
+        
 
         # Se crea su registro en la tabla de Participantes con Boleto y se agrega
         registro_participantes_con_boleto = {'num_empleado':participante_actual['num_empleado'],
@@ -721,28 +679,38 @@ def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tab
                                            'antiguedad':participante_actual['antiguedad']}]
         
         # Se crea el registro con la lista de los boletos para añadirla a la lista de sus boletos
-        registro_tabla_boletos = [{'boletos':str_boletos2[:-2]}]
+        registro_tabla_boletos = [{'boletos':str_boletos[:-2]}]
 
-        # Se ponen de color rojo todas las casillas que se metieron en la iteración anterior
-        if estilo_casillas_ocupadas:
-            # Se busca el número de boletos de la persona anterior
-            n_boletos_anteriores = df_sorteo.to_dict('records')[idx_participante-1]['antiguedad'] * n_cols
+        # En la pila de boletos, se ponen en color azul los boletos del participante actual
+        # y en rojo los que ya se han ocupado por otros participantes
+        for renglon in pila_datos_children['props']['children']:
+            for casilla in renglon['props']['children']:
+                # Se les cambia el color a los boletos ya seleccionados (rojo)
+                # Los identificamos porque en este momento tendrán su color de fondo como rojo
+                try:
+                    if casilla['props']['style']['background-color'] == '#0093E8' :
+                        casilla['props']['style']['background-color'] = '#DE4B4B'
+                except:
+                    pass
 
-            # A esos útlimos 'n_boletos_anteriores' boletos se les deberá cambiar el color a rojo
-            for d in estilo_casillas_ocupadas[len(estilo_casillas_ocupadas)-n_boletos_anteriores:]:
-                d['backgroundColor'] = '#BF1D1D'
+                # Se les cambia el color a los boletos del participante actual (azul)
+                if casilla['props']['children'] in participante_actual['boletos']:
+                    casilla['props']['style']['background-color'] = '#0093E8'
+                    casilla['props']['style']['color'] = '#FFFFFF'
         
-        # Se agregan en color azul las casillas del participante actual
-        estilo_casillas_ocupadas += [{'if': {'filter_query': f'{{{i}}} = {j}','column_id': f'{i}'},'backgroundColor': '#1173CF','color': 'white'} for i in range(0, n_cols) for j in participante_actual['boletos']]
+        # Se crea una nueva etiqueta para indicar a los participantes restantes
+        etiqueta_participantes_restantes = f"({total_participantes-idx_participante-1} restantes)"
 
-        return datos_tabla_participantes, idx_participante+1, registro_participante_sorteado, registro_tabla_boletos, estilo_casillas_ocupadas
+        # Se decide si ya es necesario bloquear el botón de "siguiente participante"
+        desactivar_boton = False
+        texto_boton = "Sortear boletos al siguiente participante"
+        if idx_participante == total_participantes - 1:
+            desactivar_boton = True
+            texto_boton = "Todos los participantes sorteados"
+
+        return datos_tabla_participantes, idx_participante+1, registro_participante_sorteado, registro_tabla_boletos, pila_datos_children, etiqueta_participantes_restantes, desactivar_boton, texto_boton
     else:
         return dash.no_update
-
-
-#     else:
-#         return dash.no_update
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
