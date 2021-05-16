@@ -45,6 +45,45 @@ def sorteoBoletos(participantes, semilla):
     
     return participantes, boletos
 
+def sorteoTerrenos(semilla, participantes, terrenos, boletos_mezclados):
+    random.seed(semilla)
+
+    # Lista para almacenar los boletos ganadores de cada terreno
+    boletos_ganadores = []
+
+    # Lista para almacenar a los participantes gandores de cada terreno
+    num_empleados_ganadores = []
+
+    # Creamos una copia de los boletos
+    boletos_copia = [boleto for boleto in boletos_mezclados]
+
+    for terreno in terrenos['Numero_Lote'].values:    
+        # Se selecciona un boleto aleatoriamente y se añade a la lista de boletos ganadores
+        boleto_ganador = random.choice(boletos_copia)
+        boletos_ganadores.append(boleto_ganador)
+        
+        # Se busca el boleto ganador en la lista de boletos del DataFrame 'participantes'.
+        registro_ganador = participantes[participantes['boletos'].apply(lambda x: boleto_ganador in x)]
+        
+        # Extraemos el número de trabajador del participante ganador y lo añadimos a la lista
+        num_empleados_ganadores.append(registro_ganador['num_empleado'].values[0])
+        
+        # Extraemos la lista de los boletos del ganador
+        boletos_a_eliminar = registro_ganador['boletos'].values[0]
+        
+        # Eliminamos todos los boletos del ganador de los boletos disponibles
+        boletos_copia = [boleto for boleto in boletos_copia if boleto not in boletos_a_eliminar]
+
+    # Añadimos al DataFrame de los terrenos a los ganadores
+    terrenos['boleto_ganador'] = boletos_ganadores
+    terrenos['num_empleado'] = num_empleados_ganadores
+
+    # Combinamos el dataframe de los terrenos con el de los participantes
+    # y lo guardamos en un archivo
+    resultados = pd.merge(terrenos, participantes, on="num_empleado", how="outer")
+    resultados = resultados.head(len(terrenos.index))
+    return resultados
+
 
 
 if __name__ == '__main__':
