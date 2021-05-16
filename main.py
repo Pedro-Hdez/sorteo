@@ -6,6 +6,7 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash_html_components.Label import Label
 from dash.dependencies import Input, Output, State
+#from dash_extensions import Download
 
 import dash_table
 import pandas as pd
@@ -51,7 +52,7 @@ semilla_modal_fase2 = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader("Establecer Semilla Para El Sorteo De Los Boletos"),
+                dbc.ModalHeader(html.H2("Establecer semilla para el sorteo de los boletos")),
                 dbc.ModalBody(children=[
                     dbc.Form(id='semilla-modal-form',
                         children=[
@@ -152,6 +153,39 @@ afirmacion_sorteo_boletos_modal_fase2 = html.Div(
     ]
 )
 
+# Modal para descargar los resultados del sorteo de boletos
+descarga_resultados_sorteo_boletos_modal = html.Div(
+    [        
+        dbc.Modal(
+            [
+                dbc.ModalHeader(html.H2("Descarga de los resultados del sorteo de boletos"), style={'background-color':'#3D7EF2', 'color':'white'}),
+                dbc.ModalBody(children=[
+                    html.Div(children=[
+                        html.H3("El sorteo de los boletos ha finalizado",style={'text-align':'center', 'padding':'1em'}),
+                        
+                        html.Div([
+                            dbc.Button("Descargar el archivo de resultados en formato csv", 
+                                    id="btn-descarga-resultados-sorteo-boletos", 
+                                    color="success", className="mr-1"), 
+
+                            dcc.Download(id="descarga-resultado-sorteo-boletos")
+                        ],style={"display":'flex', "justify-content":"center", "align-items": "center"}),
+                    ]),
+                    
+                ], style={'background-color':'#EBEBEB'}),
+            ],
+            id="descarga-resultado-sorteo-boletos-modal",
+            is_open=False,
+            size="xl", #sm, lg, xl
+            backdrop=False, # to be or not to be closed by clicking on backdrop
+            scrollable=True, # Scrollable if modal has a lot of text
+            centered=True, 
+            fade=True,
+            keyboard=False
+        )
+    ]
+)
+
 # Etiqueta para mostrar la semilla
 semilla_label = dbc.Label(html.H3("Semilla: Sin semilla", id='label-semilla'), 
                           style={'text-align':'center', 'padding':'1em'})
@@ -239,6 +273,8 @@ tabla_boletos_fase2 = dash_table.DataTable(
     fixed_rows={'headers': True},
     style_table={'height': 200},
 )
+# -------------------------- OBJETOS DE LA FASE 2 ----------------------------
+
 
 # ***************************** PÁGINA PRINCIPAL ******************************
 
@@ -293,6 +329,24 @@ app.layout = html.Div([
     # Objeto para almacenar el estilo
     dcc.Store(
         id='info-estilo-casillas', data=[]
+    ),
+
+    # Objeto para almacenar la bandera que nos indica si el modal para la descarga de los
+    # resultados del sorteo de boletos se abrirá o no
+    dcc.Store(
+        id='info-abrir-modal-descargar-resultados-sorteo-boletos', data=False
+    ),
+
+    # Objeto para almacenar la bandera que nos indicará si el botón de sortear participante
+    # se deshabilita o no
+    dcc.Store(
+        id='info-deshabilitar-boton-sortear-participante', data=True
+    ),
+
+    # Objeto para almacenar la bandera que nos indicará si el botón de sortear participante
+    # se habilitará
+    dcc.Store(
+        id='info-habilitar-boton-sortear-participante', data=False
     ),
 
     # Modal para pedir una semilla
@@ -361,6 +415,9 @@ app.layout = html.Div([
             html.H1("FASE 2: SORTEO DE BOLETOS",style={'text-align':'center', 'padding':'1em'}),
         ]),
 
+        # Modal para descargar el resultado del sorteo de los boletos
+        descarga_resultados_sorteo_boletos_modal,
+
         # Modal de confirmación cuando el sorteo se realice
         afirmacion_sorteo_boletos_modal_fase2, 
         
@@ -401,7 +458,7 @@ app.layout = html.Div([
 
                     html.Br(),
 
-                    dbc.Button("Sortear boletos al siguiente participante", id="siguiente-btn", color="primary", className="mr-1", style={'float':'right'}),
+                    dbc.Button("Los boletos no se han mezclado", id="siguiente-btn", color="primary", className="mr-1", style={'float':'right'}, disabled=True),
                     
                 ], style={"margin": "auto","width": "85%", 'padding':'1em'})
             ],md=6)
@@ -494,7 +551,7 @@ def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
             print(f"Y necesitamos completar con: {num_completar} espacios en blanco")
 
             # Se genera la secuencia de boletos
-            n_ceros = len(str(n_boletos+1))
+            n_ceros = len(str(n_boletos))
             boletos = [str(i).zfill(n_ceros) for i in range(1, n_boletos+1)]
             # Se rellenan al final con datos en blanco
             boletos += [' ' for _ in range(num_completar)]
@@ -530,21 +587,21 @@ def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
     [Input('link-fase2', 'n_clicks'), Input('ok-btn-modal-semilla', 'n_clicks')],
     [State('semilla-modal', 'is_open'), State('info-semilla', 'data')]
 )
-def mostrarModalSemilla(link_fase2, ok_btn_modal_semilla, is_modal_open, info_semilla):
-    ctx = dash.callback_context
-    if ctx.triggered:
-        # Getting the id of the object which triggered the callback
-        boton = ctx.triggered[0]['prop_id'].split('.')[0]
+def mostrarModalSemilla(link_fase2, ok_btn_modal_semilla, modal_esta_abierto, info_semilla):
+    contexto = dash.callback_context
+    if contexto.triggered:
+        # Se busca qué elemento disparó el callback
+        boton = contexto.triggered[0]['prop_id'].split('.')[0]
 
         if boton == 'link-fase2':
             if info_semilla == 'Sin semilla':
                 print("Se necesita una nueva semilla")
-                return not is_modal_open
+                return not modal_esta_abierto
         elif boton == 'ok-boton-modal-semilla':
             print("Se cierra el modal")
-            return not is_modal_open
+            return not modal_esta_abierto
     else:
-        return is_modal_open
+        return modal_esta_abierto
 
 # ----> Callback para leer la semilla del modal y actualizarla en el objeto
 #       dcc.Store y en su correspondiente etiqueta.
@@ -555,10 +612,10 @@ def mostrarModalSemilla(link_fase2, ok_btn_modal_semilla, is_modal_open, info_se
 )
 def actualizarSemilla(link_fase2, ok_btn_modal_semilla, modal_childrens, info_semilla):
 
-    ctx = dash.callback_context
-    if ctx.triggered:
-        # Getting the id of the object which triggered the callback
-        boton = ctx.triggered[0]['prop_id'].split('.')[0]
+    contexto = dash.callback_context
+    if contexto.triggered:
+        # Se busca qué elemento disparó el callback
+        boton = contexto.triggered[0]['prop_id'].split('.')[0]
 
         if boton == 'ok-btn-modal-semilla':
             print("Leyendo la semilla...")
@@ -579,11 +636,12 @@ def actualizarSemilla(link_fase2, ok_btn_modal_semilla, modal_childrens, info_se
         return dash.no_update
 
 # ----> Callback para realizar el sorteo de los boletos y notificar que se
-#       realizó exitosamente. Además, se crea la pila de boletos mezclados
+#       realizó exitosamente. Además, se crea la pila de boletos mezclados. También se habilita
+#       el botón para sortear participantes
 @app.callback(
     [Output('afirmacion-sorteo-boletos-modal', 'is_open'), Output('sorteo-boletos', 'data'),
      Output('div-pila-datos-fase2', 'children'), Output('sorteo-boletos-btn', 'disabled'),
-     Output('sorteo-boletos-btn', 'children')],
+     Output('sorteo-boletos-btn', 'children'), Output('info-habilitar-boton-sortear-participante', 'data')],
 
     [Input('sorteo-boletos-btn', 'n_clicks'), Input('ok-afirmacion-sorteo-boletos-btn-modal', 'n_clicks')],
 
@@ -593,11 +651,11 @@ def actualizarSemilla(link_fase2, ok_btn_modal_semilla, modal_childrens, info_se
 )
 def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla, sorteo_boletos,
                    info_tabla_participantes, n_cols, pila_datos_children):
-    ctx = dash.callback_context
+    contexto = dash.callback_context
 
-    if ctx.triggered:
-        # Getting the id of the object which triggered the callback
-        boton = ctx.triggered[0]['prop_id'].split('.')[0]
+    if contexto.triggered:
+        # Se busca qué elemento disparó el callback
+        boton = contexto.triggered[0]['prop_id'].split('.')[0]
 
         if boton == 'sorteo-boletos-btn':
             # Se obtiene el DataFrame de la fase anterior
@@ -627,10 +685,10 @@ def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla
             table_body = html.Tbody(renglones)
             table = dbc.Table(table_body, bordered=True, id='tabla-pila-boletos-fase2')
 
-            return True, df_sorteo.to_dict('records'), table, True, "Los boletos ya se han mezclado"
+            return True, df_sorteo.to_dict('records'), table, True, "Los boletos ya se han mezclado", True
         elif boton == 'ok-afirmacion-sorteo-boletos-btn-modal':
             print("OK")
-            return False, sorteo_boletos, pila_datos_children, True, "Los boletos ya se han mezclado"
+            return False, sorteo_boletos, pila_datos_children, True, "Los boletos ya se han mezclado", True
     else:
         return dash.no_update
 
@@ -639,9 +697,12 @@ def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla
 @app.callback(
     [Output('tabla-participantes-fase2', 'data'), Output('idx-participante-sorteo-boletos', 'data'),
      Output('tabla-participante-actual', 'data'), Output('tabla-boletos-participante-actual', 'data'),
-     Output('tabla-pila-boletos-fase2', 'children'), Output('participantes-restantes-label', 'children'),
-     Output('siguiente-btn', 'disabled'), Output('siguiente-btn', 'children')],
+     Output('tabla-pila-boletos-fase2', 'children'), Output('participantes-restantes-label', 'children'), 
+     Output('info-abrir-modal-descargar-resultados-sorteo-boletos', 'data'),
+     Output('info-deshabilitar-boton-sortear-participante', 'data')],
+
     Input('siguiente-btn', 'n_clicks'),
+
     [State('idx-participante-sorteo-boletos', 'data'), State('sorteo-boletos', 'data'),
      State('tabla-participantes-fase2','data'), State('info-num-columnas-pila-boletos', 'data'),
      State('tabla-pila-boletos-fase2', 'children'), State('info-total-participantes', 'data')]
@@ -703,14 +764,81 @@ def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tab
 
         # Se decide si ya es necesario bloquear el botón de "siguiente participante"
         desactivar_boton = False
-        texto_boton = "Sortear boletos al siguiente participante"
+        abrir_modal_descarga_resultados = False
+        deshabilitar_boton_sortear_participante = False
         if idx_participante == total_participantes - 1:
             desactivar_boton = True
-            texto_boton = "Todos los participantes sorteados"
+            abrir_modal_descarga_resultados = True
+            deshabilitar_boton_sortear_participante = True
 
-        return datos_tabla_participantes, idx_participante+1, registro_participante_sorteado, registro_tabla_boletos, pila_datos_children, etiqueta_participantes_restantes, desactivar_boton, texto_boton
+        return datos_tabla_participantes, idx_participante+1, registro_participante_sorteado, registro_tabla_boletos, pila_datos_children, etiqueta_participantes_restantes, abrir_modal_descarga_resultados, deshabilitar_boton_sortear_participante
     else:
         return dash.no_update
+
+# Callback para desplegar, en caso de ser necesario, el modal para descargar los resultados del
+# sorteo de boletos
+@app.callback(
+    Output("descarga-resultado-sorteo-boletos-modal", 'is_open'),
+    [Input('info-abrir-modal-descargar-resultados-sorteo-boletos', 'data'),
+     Input("btn-descarga-resultados-sorteo-boletos", 'n_clicks')],
+    State("descarga-resultado-sorteo-boletos-modal", 'is_open')
+)
+def mostrarModalDescargaResultadosSorteoBoletos(info_abrir_modal, btn_descarga, modal_esta_abierto):
+    contexto = dash.callback_context
+    if contexto.triggered:
+        # Se busca qué elemento disparó el callback
+        elemento = contexto.triggered[0]['prop_id'].split('.')[0]
+        if elemento == "info-abrir-modal-descargar-resultados-sorteo-boletos":
+            if info_abrir_modal:
+                return True
+        elif elemento == 'btn-descarga-resultados-sorteo-boletos':
+            return not modal_esta_abierto
+    else:
+        return modal_esta_abierto
+
+
+# Callback para bloquear, el botón de sortear boletos a los participantes cuando este sorteo
+# termine
+@app.callback(
+    [Output('siguiente-btn', 'disabled'), Output('siguiente-btn', 'children')],
+    [Input('info-deshabilitar-boton-sortear-participante', 'data'),
+     Input('info-habilitar-boton-sortear-participante', 'data')]
+)
+def deshabilitarBotonSortearSiguienteParticipante(deshabilitar, habilitar):
+    contexto = dash.callback_context
+    if contexto.triggered:
+        # Se busca qué elemento disparó el callback
+        boton = contexto.triggered[0]['prop_id'].split('.')[0]
+
+        if boton == 'info-deshabilitar-boton-sortear-participante':
+            if deshabilitar:
+                return True, "Sorteo finalizado"
+            else:
+                return False, "Sortear boletos al siguiente participante"
+
+        elif boton == 'info-habilitar-boton-sortear-participante':
+            if habilitar:
+                return False, "Sortear boletos al siguiente participante"
+            else:
+                return True, "Los boletos no se han mezclado"
+    else:
+        return dash.no_update
+
+    if deshabilitar:
+        return True, "Sorteo finalizado"
+    else:
+        return False, "Sortear boletos al siguiente participante"
+
+# Callback para descargar los resultados del sorteo de boletos
+@app.callback(
+    Output('descarga-resultado-sorteo-boletos', 'data'),
+    Input('btn-descarga-resultados-sorteo-boletos', 'n_clicks'),
+    State('sorteo-boletos', 'data'),
+    prevent_initial_call=True
+)
+def descargarResultadoAsignacionBoletos(btn_descarga_resultados, diccionario_resultados_sorteo_boletos): 
+    texto = pd.DataFrame.from_dict(diccionario_resultados_sorteo_boletos).to_csv(index=False)
+    return dict(content=texto,filename="resultados_sorteo_boletos.csv")
 
 if __name__ == '__main__':
     app.run_server(debug=True)
