@@ -6,12 +6,10 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash_html_components.Label import Label
 from dash.dependencies import Input, Output, State
-#from dash_extensions import Download
 
 import dash_table
 import pandas as pd
 import math
-import numpy as np
 
 
 from sorteo import sorteoBoletos, sorteoTerrenos
