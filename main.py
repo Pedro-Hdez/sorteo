@@ -614,12 +614,13 @@ app.layout = html.Div([
         html.Br(),
         
         html.Br(),
-        dbc.Label(html.H3("Total de boletos: ")),
-        dbc.Label(html.H3("", id='total-boletos-label'), style={'padding':'1em'}),
-
-        html.Br(),
         dbc.Label(html.H3("Número de participantes: ")),
         dbc.Label(html.H3("", id='total-participantes-label'), style={'padding':'1em'}),
+
+        html.Br(),
+        dbc.Label(html.H3("Total de boletos: ")),
+        dbc.Label(html.H3("", id='total-boletos-label'), style={'padding':'1em'}),
+        
 
         dbc.Row([
             html.Div([
