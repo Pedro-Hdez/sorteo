@@ -52,7 +52,8 @@ semilla_modal_fase2 = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader(html.H2("Establecer semilla para el sorteo de los boletos")),
+                dbc.ModalHeader(html.H2("Establecer semilla para el sorteo de los boletos"), style={'background-color':'#3D7EF2', 'color':'white'}),
+
                 dbc.ModalBody(children=[
                     dbc.Form(id='semilla-modal-form',
                         children=[
@@ -95,18 +96,15 @@ semilla_modal_fase2 = html.Div(
                                 ],
                                 className="mr-3"
                             )
-                        ],
-                        inline=True
-                    )]
-                ),
-                dbc.ModalFooter(
+                        ],inline=True
+                    ),
                     html.Div(
-                        [
-                            dbc.Button("Ok", id="ok-btn-modal-semilla", color="primary", 
-                                    style={'margin':"1em"},)
-                        ]
+                    [
+                        dbc.Button("Confirmar", id="ok-btn-modal-semilla", color="success", 
+                                style={'margin':"1em", 'float':'right'},)
+                    ]
                     )
-                )
+                ], style={'background-color':'#EBEBEB'},),
             ],
             id="semilla-modal",
             is_open=False,
@@ -125,21 +123,22 @@ afirmacion_sorteo_boletos_modal_fase2 = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader(""),
+                dbc.ModalHeader(html.H2('Mezcla de los boletos'), style={'background-color':'#3D7EF2', 'color':'white'}),
                 dbc.ModalBody(children=[
                     html.Div(children=[
                         html.H3("LOS BOLETOS SE HAN TERMINADO DE MEZCLAR",style={'text-align':'center', 'padding':'1em'}),
                     ]),
-                    
-                ]),
-                dbc.ModalFooter(
+
                     html.Div(
-                        [
-                            dbc.Button("Ok", id="ok-afirmacion-sorteo-boletos-btn-modal", color="primary", 
-                                    style={'margin':"1em"},)
-                        ]
-                    )
+                    [
+                        dbc.Button("Continuar", id="ok-afirmacion-sorteo-boletos-btn-modal", color="success")
+                    ], style={"display":'flex', "justify-content":"center", "align-items": "center"},
                 )
+                    
+                ], style={'background-color':'#EBEBEB'}),
+
+
+                
             ],
             id="afirmacion-sorteo-boletos-modal",
             is_open=False,
@@ -274,6 +273,36 @@ tabla_boletos_fase2 = dash_table.DataTable(
     style_table={'height': 200},
 )
 
+# Leyenda para la pila de boletos mezclados de la fase 2
+leyenda_pila_datos_fase2 = html.Ul([
+    html.Li([
+        html.Span([
+        ], style={'border':'3px solid #000000', 'float':'left', 'width':'20px', 'height':'20px', 
+                  'margin':'2px', 'background-color':'#FFFFFF'}),
+        
+        html.H5('Disponible', style={'float':'right'}),
+
+    ], style={'float':'left', 'margin-right':'10px'}),
+
+    html.Li([
+        html.Span([
+        ], style={'border':'3px solid #000000', 'float':'left', 'width':'20px', 'height':'20px', 
+                  'margin':'2px', 'background-color':'#DE4B4B'}),
+
+        html.H5('No disponible', style={'float':'right'}),
+
+    ], style={'float':'left', 'margin-right':'10px'}),
+
+    html.Li([
+        html.Span([
+        ], style={'border':'3px solid #000000', 'float':'left', 'width':'20px', 'height':'20px', 
+                  'margin':'2px', 'background-color':'#0093E8'}),
+
+        html.H5('Asignado al participante actual', style={'float':'right'}),
+
+    ], style={'float':'left', 'margin-right':'10px'})
+], style={'list-style':'none'})
+
 # -------------------------- OBJETOS DE LA FASE 3 ----------------------------
 
 # Modal para descargar los resultados del sorteo de terrenos
@@ -314,19 +343,26 @@ tabla_ganadores_terrenos = dash_table.DataTable(
     id='tabla-ganadores',
     columns=[{'name':['Terreno', 'No. Lote'], 'id':'numero_lote'},
              {'name':['Boleto ganador', 'Número'], 'id':'boleto_ganador'},
-             {'name':['Participante', 'No. Empleado'], 'id':'num_empleado'},
-             {'name':['Participante', 'Nombre'], 'id':'nombre'},
-             {'name':['Participante', 'Apellido'], 'id':'apellido'},
-             {'name':['Participante', 'Antigüedad'], 'id':'antiguedad'},
-             {'name':['Participante', 'Boletos'], 'id':'boletos'}],
+             {'name':['Participante ganador', 'No. Empleado'], 'id':'num_empleado'},
+             {'name':['Participante ganador', 'Nombre'], 'id':'nombre'},
+             {'name':['Participante ganador', 'Apellido'], 'id':'apellido'},
+             {'name':['Participante ganador', 'Antigüedad'], 'id':'antiguedad'},
+             {'name':['Participante ganador', 'Boletos'], 'id':'boletos'}],
     merge_duplicate_headers=True,
     data=[],
     style_cell={
-        'text_align':'left',
-        'minWidth': 90, 'maxWidth': 120, 'width': 120,
+        'text_align':'center',
+        'minWidth': 90, 'maxWidth': 90, 'width': 90,
         'whiteSpace': 'pre-line',
         'height': 'auto',
     },
+    style_cell_conditional=[
+        {
+            'if': {'column_id': 'boletos'},
+            'textAlign': 'left',
+            'width':200
+        }
+    ],
     style_data={
         'whiteSpace': 'pre-line',
         'height': 'auto',
@@ -385,6 +421,45 @@ tabla_boletos_participante_ganador = dash_table.DataTable(
     fixed_rows={'headers': True},
     style_table={'height': 200},
 )
+
+# Leyenda para la pila de boletos mezclados de la fase 3
+leyenda_pila_datos_fase3 = html.Ul([
+    html.Li([
+        html.Span([
+        ], style={'border':'3px solid #000000', 'float':'left', 'width':'20px', 'height':'20px', 
+                  'margin':'2px', 'background-color':'#FFFFFF'}),
+        
+        html.H5('En juego', style={'float':'right'}),
+
+    ], style={'float':'left', 'margin-right':'10px'}),
+
+    html.Li([
+        html.Span([
+        ], style={'border':'3px solid #000000', 'float':'left', 'width':'20px', 'height':'20px', 
+                  'margin':'2px', 'background-color':'#DE4B4B'}),
+
+        html.H5('Retirados', style={'float':'right'}),
+
+    ], style={'float':'left', 'margin-right':'10px'}),
+
+    html.Li([
+        html.Span([
+        ], style={'border':'3px solid #000000', 'float':'left', 'width':'20px', 'height':'20px', 
+                  'margin':'2px', 'background-color':'#0093E8'}),
+
+        html.H5('Asignado al ganador actual', style={'float':'right'}),
+
+    ], style={'float':'left', 'margin-right':'10px'}),
+
+    html.Li([
+        html.Span([
+        ], style={'border':'3px solid #000000', 'float':'left', 'width':'20px', 'height':'20px', 
+                  'margin':'2px', 'background-color':'#63CF55'}),
+
+        html.H5('Ganador del terreno actual', style={'float':'right'}),
+
+    ], style={'float':'left', 'margin-right':'10px'})
+], style={'list-style':'none'})
 # ***************************** PÁGINA PRINCIPAL ******************************
 
 app.layout = html.Div([
@@ -461,6 +536,12 @@ app.layout = html.Div([
         id='info-abrir-modal-descargar-resultados-sorteo-boletos', data=False
     ),
 
+    # Objeto para almacenar la bandera que nos indica si el modal para la descarga de los
+    # resultados del sorteo de terrenos se abrirá o no
+    dcc.Store(
+        id='info-abrir-modal-descargar-resultados-sorteo-terrenos', data=False
+    ),
+
     # Objeto para almacenar la bandera que nos indicará si el botón de sortear participante
     # se deshabilita o no
     dcc.Store(
@@ -471,6 +552,18 @@ app.layout = html.Div([
     # se habilitará
     dcc.Store(
         id='info-habilitar-boton-sortear-participante', data=False
+    ),
+
+    # Objeto para almacenar la bandera que nos indicará si el botón de sortear terreno
+    # se deshabilita o no
+    dcc.Store(
+        id='info-deshabilitar-boton-sortear-terreno', data=True
+    ),
+
+    # Objeto para almacenar la bandera que nos indicará si el botón de sortear participante
+    # se habilitará
+    dcc.Store(
+        id='info-habilitar-boton-sortear-terreno', data=False
     ),
 
     # ----- Para la fase 3 -----
@@ -490,8 +583,10 @@ app.layout = html.Div([
     dbc.NavbarSimple(
         children=[
             dbc.NavItem(dbc.NavLink("Fase 1: Conteo de Boletos", href="/fase1", id='link-fase1')),
-            dbc.NavItem(dbc.NavLink("Fase 2: Sorteo de Boletos", href="/fase2", id='link-fase2')),
-            dbc.NavItem(dbc.NavLink("Fase 3: Sorteo de Terrenos", href="/fase3", id='link-fase3')),
+            dbc.NavItem(dbc.NavLink("Fase 2: Sorteo de Boletos", href="/fase2", id='link-fase2',
+                                     disabled=True)),
+            dbc.NavItem(dbc.NavLink("Fase 3: Sorteo de Terrenos", href="/fase3", id='link-fase3',
+                                     disabled=True)),
         ],
         brand="Fases del Sorteo",
         brand_href="/",
@@ -593,9 +688,12 @@ app.layout = html.Div([
         ]),
         
         html.Div([
-            html.H3('PILA DE BOLETOS MEZCLADOS', style={'text-align':'center', 'padding':'1em'}),
-            
+            html.H3('PILA DE BOLETOS MEZCLADOS', style={'text-align':'center', 'padding':'1em'}), 
         ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
+
+        html.Div([
+            leyenda_pila_datos_fase2
+        ], style={'margin-left':'auto', 'padding':'1em'}),
         
         html.Div([
         ], style={"position":"relative", "height":"800px", "overflow":"auto", "display":"block", "justify":"center", "margin": "0 auto", "width": "95%"}, id='div-pila-datos-fase2'),
@@ -633,11 +731,13 @@ app.layout = html.Div([
                 html.Div([
                     html.H3('NÚMERO DE LOTE DEL TERRENO ACTUAL', style={'text-align':'center'}),
                     html.H3(children=[], style={'text-align':'center'}, 
+                            id='terrenos-restantes-label'),
+                    html.H3(children=[], style={'text-align':'center'}, 
                             id='terreno-actual-label'),
                     
                     html.Br(),
 
-                    html.H3('BOLETO GANADOR', style={'text-align':'center'}),
+                    html.H3('NÚMERO DEL BOLETO GANADOR', style={'text-align':'center'}),
                     html.H3(children=[], style={'text-align':'center'}, 
                             id='boleto-ganador-label'),
                     
@@ -654,8 +754,7 @@ app.layout = html.Div([
                     tabla_boletos_participante_ganador,
 
                     html.Br(),
-
-                    dbc.Button("Sortear el siguiente terreno", id="siguiente-terreno-btn", color="primary", className="mr-1", style={'float':'right'}),
+                    dbc.Button("El sorteo de boletos no ha terminado", id="siguiente-terreno-btn", color="primary", className="mr-1", style={'float':'right'}, disabled=True),
                     
                 ], style={"margin": "auto","width": "85%", 'padding':'1em'})
             ],md=6)
@@ -663,9 +762,13 @@ app.layout = html.Div([
         ]),
         
         html.Div([
-            html.H3('PILA DE BOLETOS EN JUEGO', style={'text-align':'center', 'padding':'1em'}),
+            html.H3('PILA DE BOLETOS MEZCLADOS', style={'text-align':'center', 'padding':'1em'}),
             
         ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
+
+        html.Div([
+            leyenda_pila_datos_fase3
+        ], style={'margin-left':'auto', 'padding':'1em'}),
         
         html.Div([
         ], style={"position":"relative", "height":"800px", "overflow":"auto", "display":"block", "justify":"center", "margin": "0 auto", "width": "95%"}, id='div-pila-datos-fase3'),
@@ -712,7 +815,8 @@ def cambiarFase(url):
     [Output('tabla-participantes-fase1', 'data'), Output('info-tabla-participantes-fase1', 'data'),
      Output('total-participantes-label', 'children'), Output('total-boletos-label', 'children'),
      Output('info-total-participantes', 'data'), Output('info-total-boletos', 'data'),
-     Output('div-pila-datos-fase1', 'children'), Output('info-terrenos', 'data')],
+     Output('div-pila-datos-fase1', 'children'), Output('info-terrenos', 'data'),
+     Output('link-fase2', 'disabled')],
 
     Input('link-fase1', 'n_clicks'),
 
@@ -728,7 +832,7 @@ def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
         if not tabla_participantes_fase1 and not total_participantes and not total_boletos:
             print("NO HAY NADA, SE VA A CALCULAR TODO")
             # ----- Creación del DataFrame de los participantes -----
-            df_participantes = pd.read_csv('../datos/participantes.csv')
+            df_participantes = pd.read_csv('../datos/participantes.csv').head(13)
             df_participantes = df_participantes.sort_values(by=['antiguedad', 'apellido'], 
                                                             ascending=[False, True])
             
@@ -779,7 +883,7 @@ def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
             table = dbc.Table(table_body, bordered=True)
 
 
-            return data_participantes, data_participantes, n_participantes, n_boletos, n_participantes, n_boletos, table, data_terrenos
+            return data_participantes, data_participantes, n_participantes, n_boletos, n_participantes, n_boletos, table, data_terrenos, False
         else:
             print("YA EXISTE TODO, SE VA A ENVIAR DIRECTAMENTE")
             return dash.no_update
@@ -902,9 +1006,10 @@ def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla
                 renglones.append(renglon)
             
             table_body = html.Tbody(renglones)
-            table = dbc.Table(table_body, bordered=True, id='tabla-pila-boletos-fase2')
+            table_pila_boletos_fase2 = dbc.Table(table_body, bordered=True, id='tabla-pila-boletos-fase2')
+            table_pila_boletos_fase3 = dbc.Table(table_body, bordered=True, id='tabla-pila-boletos-fase3')
 
-            return True, df_sorteo.to_dict('records'), table, True, "Los boletos ya se han mezclado", True, df_ganadores.to_dict('records'), table
+            return True, df_sorteo.to_dict('records'), table_pila_boletos_fase2, True, "Los boletos ya se han mezclado", True, df_ganadores.to_dict('records'), table_pila_boletos_fase3
         elif boton == 'ok-afirmacion-sorteo-boletos-btn-modal':
             print("OK")
             return False, sorteo_boletos, pila_datos_children, True, "Los boletos ya se han mezclado", True, info_sorteo_terrenos, pila_datos_children2
@@ -917,13 +1022,15 @@ def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla
      Output('tabla-participante-actual', 'data'), Output('tabla-boletos-participante-actual', 'data'),
      Output('tabla-pila-boletos-fase2', 'children'), Output('participantes-restantes-label', 'children'), 
      Output('info-abrir-modal-descargar-resultados-sorteo-boletos', 'data'),
-     Output('info-deshabilitar-boton-sortear-participante', 'data')],
+     Output('info-deshabilitar-boton-sortear-participante', 'data'), 
+     Output('info-habilitar-boton-sortear-terreno', 'data'), Output('link-fase3', 'disabled')],
 
     Input('siguiente-btn', 'n_clicks'),
 
     [State('idx-participante-sorteo-boletos', 'data'), State('sorteo-boletos', 'data'),
      State('tabla-participantes-fase2','data'), State('info-num-columnas-pila-boletos', 'data'),
-     State('tabla-pila-boletos-fase2', 'children'), State('info-total-participantes', 'data')]
+     State('tabla-pila-boletos-fase2', 'children'), State('info-total-participantes', 'data')],
+     prevent_initial_call=True
 )
 def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tabla_participantes, 
                          n_cols, pila_datos_children, total_participantes):
@@ -981,15 +1088,18 @@ def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tab
         etiqueta_participantes_restantes = f"({total_participantes-idx_participante-1} restantes)"
 
         # Se decide si ya es necesario bloquear el botón de "siguiente participante"
-        desactivar_boton = False
         abrir_modal_descarga_resultados = False
         deshabilitar_boton_sortear_participante = False
+        habilitar_sorteo_terrenos = False
+        habilitar_fase3 = True
         if idx_participante == total_participantes - 1:
-            desactivar_boton = True
+            print("SE ACABA DE SORTEAR EL ÚLTIMO PARTICIPANTE")
             abrir_modal_descarga_resultados = True
             deshabilitar_boton_sortear_participante = True
+            habilitar_sorteo_terrenos = True
+            habilitar_fase3 = False
 
-        return datos_tabla_participantes, idx_participante+1, registro_participante_sorteado, registro_tabla_boletos, pila_datos_children, etiqueta_participantes_restantes, abrir_modal_descarga_resultados, deshabilitar_boton_sortear_participante
+        return datos_tabla_participantes, idx_participante+1, registro_participante_sorteado, registro_tabla_boletos, pila_datos_children, etiqueta_participantes_restantes, abrir_modal_descarga_resultados, deshabilitar_boton_sortear_participante, habilitar_sorteo_terrenos, habilitar_fase3
     else:
         return dash.no_update
 
@@ -1063,14 +1173,28 @@ def descargarResultadoAsignacionBoletos(btn_descarga_resultados, diccionario_res
 # *************************** CALLBACKS DE LA FASE 3 **************************
 # ----> Callback para crear la tabla de ganadores vacía
 @app.callback(
-    [Output('tabla-ganadores', 'data'), Output('idx-sorteo-terreno', 'data')],
+    [Output('tabla-ganadores', 'data'), Output('idx-sorteo-terreno', 'data'),
+     Output('tabla-participante-ganador', 'data'), Output('tabla-pila-boletos-fase3', 'children'), 
+     Output('tabla-boletos-participante-ganador', 'data'), Output('terreno-actual-label', 'children'),
+     Output('boleto-ganador-label', 'children'), Output('terrenos-restantes-label', 'children'),
+     Output('info-abrir-modal-descargar-resultados-sorteo-terrenos', 'data'),
+     Output('info-deshabilitar-boton-sortear-terreno', 'data')],
+
     [Input('link-fase3', 'n_clicks'), Input('siguiente-terreno-btn', 'n_clicks')],
+
     [State('info-sorteo-terrenos', 'data'), State('tabla-ganadores', 'data'),
-     State('idx-sorteo-terreno', 'data')],
+     State('idx-sorteo-terreno', 'data'), State('tabla-participante-ganador', 'data'),
+     State('tabla-pila-boletos-fase3', 'children'), 
+     State('tabla-boletos-participante-ganador', 'data'), State('terreno-actual-label', 'children'),
+     State('boleto-ganador-label', 'children'), State('terrenos-restantes-label', 'children'),
+     State('info-deshabilitar-boton-sortear-participante', 'data')],
     prevent_initial_call=True
 )
 def sortearGanadores(link_fase3, siguiente_terreno_btn, sorteo_terrenos_data, tabla_ganadores_data, 
-                     idx_terreno):
+                     idx_terreno, tabla_participante_ganador_data, pila_boletos_children,
+                     tabla_boletos_participante_ganador_data, terreno_actual_label,
+                     boleto_ganador_label, terrenos_restantes_label, 
+                     deshabilitar_boton_sortear_boletos):
     contexto = dash.callback_context
     if contexto.triggered:
         # Se busca qué elemento disparó el callback
@@ -1101,10 +1225,15 @@ def sortearGanadores(link_fase3, siguiente_terreno_btn, sorteo_terrenos_data, ta
                                 'boletos': " "}
                     data_tabla_ganadores.append(registro)
                 
-                return data_tabla_ganadores, idx_terreno
+                if deshabilitar_boton_sortear_boletos:
+                    deshabilitar_boton_sortear_terreno = False
+                else:
+                    deshabilitar_boton_sortear_terreno = True
+
+                return data_tabla_ganadores, idx_terreno, tabla_participante_ganador_data, pila_boletos_children, tabla_participante_ganador_data, terreno_actual_label, boleto_ganador_label, terrenos_restantes_label, False, deshabilitar_boton_sortear_terreno
             else:
                 print("NO ES LA PRIMERA VEZ EN LA FASE 3")
-                return tabla_ganadores_data, idx_terreno
+                return dash.no_update
         
         # Caso en donde sorteamos un nuevo terreno
         elif boton == 'siguiente-terreno-btn':
@@ -1114,6 +1243,11 @@ def sortearGanadores(link_fase3, siguiente_terreno_btn, sorteo_terrenos_data, ta
             # Se extrae el terreno actual
             terreno_actual = df_sorteo_terrenos.to_dict('records')[idx_terreno]
 
+            # Se formatean los boletos para que se vean bien en la tabla
+            str_boletos = ""
+            for boleto in terreno_actual['boletos']:
+                str_boletos += boleto + ", "
+
             # Se crea el registro en la tabla de los ganadores
             registro_tabla_ganadores = {'numero_lote':terreno_actual['Numero_Lote'],
                                         'boleto_ganador':terreno_actual['boleto_ganador'],
@@ -1121,13 +1255,122 @@ def sortearGanadores(link_fase3, siguiente_terreno_btn, sorteo_terrenos_data, ta
                                         'nombre':terreno_actual['nombre'],
                                         'apellido':terreno_actual['apellido'],
                                         'antiguedad':terreno_actual['antiguedad'],
-                                        'boletos':terreno_actual['boletos']}
+                                        'boletos':str_boletos[:-2]}
             
             # Se reemplaza el registro del terreno correspondiente en el cuerpo de la tabla de
             # ganadores
             tabla_ganadores_data[idx_terreno] = registro_tabla_ganadores
 
-            return tabla_ganadores_data, idx_terreno+1
-                
+            # Se crea el registro del ganador en la tabla del ganador actual
+            tabla_participante_ganador_data = [{'boleto_ganador':terreno_actual['boleto_ganador'],
+                                       'num_empleado':terreno_actual['num_empleado'],
+                                       'nombre':terreno_actual['nombre'],
+                                       'apellido':terreno_actual['apellido'],
+                                       'antiguedad':terreno_actual['antiguedad']
+                                       }]
+            
+            # En la pila de boletos en juego, se marca en azul el boleto ganador y en rojo los
+            # demás boletos del ganador actual y el de los anteriores
+            for renglon in pila_boletos_children['props']['children']:
+                for casilla in renglon['props']['children']:
+                    # Se les cambia el color a los boletos ya seleccionados (rojo)
+                    try:
+                        if (casilla['props']['style']['background-color'] == '#0093E8' 
+                        or casilla['props']['style']['background-color'] == '#63CF55'):
+                            casilla['props']['style']['background-color'] = '#DE4B4B'
+                    except:
+                        pass
+
+                    # Se ponen en azul todos los boletos del participante actual y en verde
+                    # el boleto ganador
+                    if casilla['props']['children'] in terreno_actual['boletos']:
+                        if casilla['props']['children'] != terreno_actual['boleto_ganador']:
+                            casilla['props']['style']['background-color'] = '#0093E8'
+                            casilla['props']['style']['color'] = '#FFFFFF'
+                        else:
+                            casilla['props']['style']['background-color'] = '#63CF55'
+                            casilla['props']['style']['color'] = '#FFFFFF'
+            
+            # Se crea el registro para la tabla de los boletos del ganador actual
+            tabla_boletos_participante_ganador_data = [{'boletos':str_boletos[:-2]}]
+
+            # Se crea la etiqueta para el terreno actual
+            terreno_actual_label = html.H3(terreno_actual['Numero_Lote'], style={"border": "1px solid #ccc"})
+
+            # Se crea la etiqueta para el boleto ganador actual
+            boleto_ganador_label = html.H3(terreno_actual['boleto_ganador'], style={"border": "1px solid #ccc"})
+
+            # Se crea la etiqueta para los terrenos restantes 
+            terrenos_restantes_label = html.H3(f"({len(df_sorteo_terrenos)-idx_terreno-1} restantes)")
+
+            # Se decide si ya es necesario bloquear el botón de "siguiente participante"
+            abrir_modal_descarga_resultados = False
+            deshabilitar_boton_sortear_terreno = False
+            if idx_terreno == len(df_sorteo_terrenos)- 1:
+                print("SE ACABA DE SORTEAR EL ULTIMO TERRENO")
+                abrir_modal_descarga_resultados = True
+                deshabilitar_boton_sortear_terreno = True
+
+            return tabla_ganadores_data, idx_terreno+1, tabla_participante_ganador_data, pila_boletos_children, tabla_boletos_participante_ganador_data, terreno_actual_label, boleto_ganador_label, terrenos_restantes_label, abrir_modal_descarga_resultados, deshabilitar_boton_sortear_terreno
+
+# Callback para desplegar, en caso de ser necesario, el modal para descargar los resultados del
+# sorteo de boletos
+@app.callback(
+    Output("descarga-resultado-sorteo-terrenos-modal", 'is_open'),
+    [Input('info-abrir-modal-descargar-resultados-sorteo-terrenos', 'data'),
+     Input("btn-descarga-resultados-sorteo-terrenos", 'n_clicks')],
+    State("descarga-resultado-sorteo-terrenos-modal", 'is_open')
+)
+def mostrarModalDescargaResultadosSorteoBoletos(info_abrir_modal, btn_descarga, modal_esta_abierto):
+    contexto = dash.callback_context
+    if contexto.triggered:
+        # Se busca qué elemento disparó el callback
+        elemento = contexto.triggered[0]['prop_id'].split('.')[0]
+        if elemento == "info-abrir-modal-descargar-resultados-sorteo-terrenos":
+            if info_abrir_modal:
+                return True
+        elif elemento == 'btn-descarga-resultados-sorteo-terrenos':
+            return not modal_esta_abierto
+    else:
+        return modal_esta_abierto
+
+# Callback para bloquear, el botón de sortear terrenos cuando este sorteo termine
+@app.callback(
+    [Output('siguiente-terreno-btn', 'disabled'), Output('siguiente-terreno-btn', 'children')],
+    [Input('info-deshabilitar-boton-sortear-terreno', 'data'),
+     Input('info-habilitar-boton-sortear-terreno', 'data')],
+     prevent_initial_call=True
+)
+def deshabilitarBotonSortearSiguienteBoleto(deshabilitar, habilitar):
+    contexto = dash.callback_context
+    if contexto.triggered:
+        # Se busca qué elemento disparó el callback
+        boton = contexto.triggered[0]['prop_id'].split('.')[0]
+
+        if boton == 'info-deshabilitar-boton-sortear-terreno':
+            if deshabilitar:
+                return True, "Sorteo finalizado"
+            else:
+                return False, "Sortear el siguiente terreno"
+
+        elif boton == 'info-habilitar-boton-sortear-terreno':
+            if habilitar:
+                return False, "Sortear el siguiente terreno"
+            else:
+                return True, "El sorteo de boletos no ha finalizado"
+    else:
+        return dash.no_update
+
+# Callback para descargar los resultados del sorteo de boletos
+@app.callback(
+    Output('descarga-resultado-sorteo-terrenos', 'data'),
+    Input('btn-descarga-resultados-sorteo-terrenos', 'n_clicks'),
+    State('info-sorteo-terrenos', 'data'),
+    prevent_initial_call=True
+)
+def descargarResultadoGanadores(btn_descarga_resultados, diccionario_resultados_sorteo_terrenos): 
+    texto = pd.DataFrame.from_dict(diccionario_resultados_sorteo_terrenos).to_csv(index=False)
+    return dict(content=texto,filename="resultados_sorteo_terrenos.csv")
+
 if __name__ == '__main__':
     app.run_server(debug=True)
