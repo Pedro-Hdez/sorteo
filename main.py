@@ -832,7 +832,7 @@ def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
         if not tabla_participantes_fase1 and not total_participantes and not total_boletos:
             print("NO HAY NADA, SE VA A CALCULAR TODO")
             # ----- Creación del DataFrame de los participantes -----
-            df_participantes = pd.read_csv('../datos/participantes.csv').head(13)
+            df_participantes = pd.read_csv('../datos/participantes.csv')
             df_participantes = df_participantes.sort_values(by=['antiguedad', 'apellido'], 
                                                             ascending=[False, True])
             
