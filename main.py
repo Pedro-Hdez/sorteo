@@ -830,12 +830,12 @@ def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
         if not tabla_participantes_fase1 and not total_participantes and not total_boletos:
             print("NO HAY NADA, SE VA A CALCULAR TODO")
             # ----- Creación del DataFrame de los participantes -----
-            df_participantes = pd.read_csv('../datos/participantes.csv')
+            df_participantes = pd.read_csv('./datos/participantes.csv')
             df_participantes = df_participantes.sort_values(by=['antiguedad', 'apellido'], 
                                                             ascending=[False, True])
             
             # ----- Creación del DataFrame de los terrenos -----
-            df_terrenos = pd.read_csv('../datos/terrenos.csv')
+            df_terrenos = pd.read_csv('./datos/terrenos.csv')
 
             # Se calcula el total de participantes y el total de los boletos
             n_participantes = len(df_participantes.index)
@@ -1371,4 +1371,4 @@ def descargarResultadoGanadores(btn_descarga_resultados, diccionario_resultados_
     return dict(content=texto,filename="resultados_sorteo_terrenos.csv")
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False,dev_tools_ui=False,dev_tools_props_check=False)
