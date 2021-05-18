@@ -122,8 +122,8 @@ def sorteoTerrenos(semilla, participantes, terrenos, boletos_mezclados):
     terrenos['boleto_ganador'] = boletos_ganadores
     terrenos['num_empleado'] = num_empleados_ganadores
 
+
     # Combinamos el dataframe de los terrenos con el de los participantes
-    # y lo guardamos en un archivo
     resultados = pd.merge(terrenos, participantes, on="num_empleado", how="outer")
     resultados = resultados.head(len(terrenos.index))
     return resultados
