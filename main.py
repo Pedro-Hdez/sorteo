@@ -24,7 +24,7 @@ app = dash.Dash(__name__, suppress_callback_exceptions=True,
                             'content': 'width=device-width, initial-scale=1.0'}],
                 external_stylesheets=external_stylesheets,
                 assets_folder='assets',
-                title="Sorteo terrenos - Universidad de Sonora"
+                title="Sorteo Trece Lotes - Universidad de Sonora"
                )
 
 
@@ -1263,7 +1263,7 @@ def deshabilitarBotonSortearSiguienteParticipante(deshabilitar_sorteo_finalizado
     prevent_initial_call=True
 )
 def descargarResultadoAsignacionBoletos(btn_descarga_resultados, diccionario_resultados_sorteo_boletos): 
-    texto = "# Listado de boletos asignados a los participantes\n# del sorteo Trece Terrenos"
+    texto = "# Listado de boletos asignados a los participantes\n# del sorteo Trece Lotes\n\n"
     texto += pd.DataFrame.from_dict(diccionario_resultados_sorteo_boletos).to_csv(index=False)
     return dict(content=texto,filename="ASIGNACION_DE_BOLETOS.csv"), {}
 
