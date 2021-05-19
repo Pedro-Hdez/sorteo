@@ -11,6 +11,7 @@ from dash.dependencies import Input, Output, State
 import dash_table
 import pandas as pd
 import math
+import time
 
 
 from sorteo import sorteoBoletos, sorteoTerrenos
@@ -698,7 +699,7 @@ app.layout = html.Div([
 
         dbc.Row([
             html.Div([
-                html.H3('PILA DE BOLETOS', style={'text-align':'center', 'padding':'1em'}),
+                html.H3('LISTA DE BOLETOS', style={'text-align':'center', 'padding':'1em'}),
                 
             ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
             
@@ -742,8 +743,6 @@ app.layout = html.Div([
             dbc.Col([
                 html.Div([
                     html.H3('PARTICIPANTE ACTUAL', style={'text-align':'center'}),
-                    html.H3(children=[], style={'text-align':'center'}, 
-                            id='participantes-restantes-label'),
                     
                     tabla_sorteo_fase2,
 
@@ -751,6 +750,9 @@ app.layout = html.Div([
 
                     tabla_boletos_fase2,
 
+                    html.Br(),
+                    html.H3(children=[], style={'text-align':'right'}, 
+                            id='participantes-restantes-label'),
                     html.Br(),
 
                     dbc.Button("Los boletos no se han mezclado", id="siguiente-btn", color="primary", className="mr-1", style={'float':'right'}, disabled=True),
@@ -761,7 +763,7 @@ app.layout = html.Div([
         ]),
         
         html.Div([
-            html.H3('PILA DE BOLETOS MEZCLADOS', style={'text-align':'center', 'padding':'1em'}), 
+            html.H3('LISTA DE BOLETOS MEZCLADOS', style={'text-align':'center', 'padding':'1em'}), 
         ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
 
         html.Div([
@@ -812,8 +814,7 @@ app.layout = html.Div([
             dbc.Col([
                 html.Div([
                     html.H3('NÚMERO DE LOTE DEL TERRENO ACTUAL', style={'text-align':'center'}),
-                    html.H3(children=[], style={'text-align':'center'}, 
-                            id='terrenos-restantes-label'),
+
                     html.H3(children=[], style={'text-align':'center'}, 
                             id='terreno-actual-label'),
                     
@@ -826,12 +827,16 @@ app.layout = html.Div([
                     html.Br(),
 
                     html.H3('NÚMERO DE EMPLEADO DEL PARTICIPANTE GANADOR', style={'text-align':'center'}),
-                    
+
+                    html.Br(),
                     html.H3(children=[], style={'text-align':'center'}, 
                             id='participante-ganador-label'),
 
                     html.Br(),
+                    html.H3(children=[], style={'text-align':'right'}, 
+                            id='terrenos-restantes-label'),
                     dbc.Button("Comenzar el sorteo de los terrenos", id="siguiente-terreno-btn", color="primary", className="mr-1", style={'float':'right'}),
+
                     
                 ], style={"margin": "auto","width": "85%", 'padding':'1em'})
             ],md=6)
@@ -839,7 +844,7 @@ app.layout = html.Div([
         ]),
         
         html.Div([
-            html.H3('PILA DE BOLETOS MEZCLADOS', style={'text-align':'center', 'padding':'1em'}),
+            html.H3('LISTA DE BOLETOS', style={'text-align':'center', 'padding':'1em'}),
             
         ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
 
@@ -1188,6 +1193,7 @@ def mostrarModalDescargaResultadosSorteoBoletos(info_abrir_modal, btn_descarga, 
         elemento = contexto.triggered[0]['prop_id'].split('.')[0]
         if elemento == "info-abrir-modal-descargar-resultados-sorteo-boletos":
             if info_abrir_modal:
+                time.sleep(10)
                 return True
         elif elemento == 'btn-descarga-resultados-sorteo-boletos':
             return not modal_esta_abierto
@@ -1435,6 +1441,7 @@ def mostrarModalDescargaResultadosSorteoBoletos(info_abrir_modal, btn_descarga, 
         elemento = contexto.triggered[0]['prop_id'].split('.')[0]
         if elemento == "info-abrir-modal-descargar-resultados-sorteo-terrenos":
             if info_abrir_modal:
+                time.sleep(10)
                 return True
         elif elemento == 'btn-descarga-resultados-sorteo-terrenos':
             return not modal_esta_abierto
