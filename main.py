@@ -860,7 +860,7 @@ app.layout = html.Div([
                     html.Br(),
                     html.H3(children=[], style={'text-align':'right'}, 
                             id='terrenos-restantes-label'),
-                    dbc.Button("Comenzar el sorteo de los terrenos", id="siguiente-terreno-btn", color="primary", className="mr-1", style={'float':'right'}),
+                    dbc.Button("Comenzar el sorteo de los lotes", id="siguiente-terreno-btn", color="primary", className="mr-1", style={'float':'right'}),
 
                     
                 ], style={"margin": "auto","width": "85%", 'padding':'1em'})
@@ -1490,7 +1490,7 @@ def deshabilitarBotonSortearSiguienteBoleto(deshabilitar):
             if deshabilitar:
                 return True, "Sorteo finalizado"
             else:
-                return False, "Sortear el siguiente terreno"
+                return False, "Sortear el siguiente lote"
 
     else:
         return dash.no_update
@@ -1508,7 +1508,7 @@ def descargarResultadoGanadores(btn_descarga_resultados, diccionario_resultados_
     df = df.drop(columns=['antiguedad', 'boletos']).to_csv(index=False)
 
     texto = "# Listado de ganadores del sorteo Trece Lotes \n\n"
-    texto += df.to_csv(index=False)
+    texto += df
     
     return dict(content=texto, filename="RESULTADOS_DEL_SORTEO.csv"), {}
 
