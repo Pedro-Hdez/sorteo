@@ -307,7 +307,7 @@ semilla_modal_fase3 = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader(html.H2("Establecer semilla para el sorteo de los terrenos"), style={'background-color':'#3D7EF2', 'color':'white'}),
+                dbc.ModalHeader(html.H2("Establecer semilla para el sorteo de los lotes"), style={'background-color':'#3D7EF2', 'color':'white'}),
 
                 dbc.ModalBody(children=[
                     dbc.Form(id='semilla-modal-form-fase3',
@@ -659,7 +659,7 @@ app.layout = html.Div([
             dbc.NavItem(dbc.NavLink("Fase 1: Conteo de Boletos", href="/fase1", id='link-fase1')),
             dbc.NavItem(dbc.NavLink("Fase 2: Asignación de Boletos", href="/fase2", id='link-fase2',
                                      disabled=True)),
-            dbc.NavItem(dbc.NavLink("Fase 3: Sorteo de Terrenos", href="/fase3", id='link-fase3',
+            dbc.NavItem(dbc.NavLink("Fase 3: Sorteo de Lotes", href="/fase3", id='link-fase3',
                                      disabled=True)),
         ],
         brand="Fases del Sorteo",
@@ -795,7 +795,7 @@ app.layout = html.Div([
     
     html.Div(id='div-fase3', children=[
         html.Div(children=[
-            html.H1("FASE 3: SORTEO DE TERRENOS",style={'text-align':'center', 'padding':'1em'}),
+            html.H1("FASE 3: SORTEO DE LOTES",style={'text-align':'center', 'padding':'1em'}),
         ]),
 
         html.Div([
@@ -838,7 +838,7 @@ app.layout = html.Div([
 
             dbc.Col([
                 html.Div([
-                    html.H3('NÚMERO DE LOTE DEL TERRENO ACTUAL', style={'text-align':'center'}),
+                    html.H3('NÚMERO DE LOTE ACTUAL', style={'text-align':'center'}),
 
                     html.H3(children=[], style={'text-align':'center'}, 
                             id='terreno-actual-label'),
@@ -1263,7 +1263,7 @@ def deshabilitarBotonSortearSiguienteParticipante(deshabilitar_sorteo_finalizado
     prevent_initial_call=True
 )
 def descargarResultadoAsignacionBoletos(btn_descarga_resultados, diccionario_resultados_sorteo_boletos): 
-    texto = "# Resultados de la asignación de boletos aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\n"
+    texto = "# Listado de boletos asignados a los participantes\n# del sorteo Trece Terrenos"
     texto += pd.DataFrame.from_dict(diccionario_resultados_sorteo_boletos).to_csv(index=False)
     return dict(content=texto,filename="ASIGNACION_DE_BOLETOS.csv"), {}
 
@@ -1503,10 +1503,13 @@ def deshabilitarBotonSortearSiguienteBoleto(deshabilitar):
     prevent_initial_call=True
 )
 def descargarResultadoGanadores(btn_descarga_resultados, diccionario_resultados_sorteo_terrenos): 
-    texto = pd.DataFrame.from_dict(diccionario_resultados_sorteo_terrenos)
-    texto['boleto_ganador'] = [f"\'{b}\'" for b in texto['boleto_ganador']]
-    #texto.astype({'boleto_ganador': 'str'}).dtypes
-    texto = texto.drop(columns=['antiguedad', 'boletos']).to_csv(index=False)
+    df = pd.DataFrame.from_dict(diccionario_resultados_sorteo_terrenos)
+    df['boleto_ganador'] = [f"\'{b}\'" for b in df['boleto_ganador']]
+    df = df.drop(columns=['antiguedad', 'boletos']).to_csv(index=False)
+
+    texto = "# Listado de ganadores del sorteo Trece Lotes \n\n"
+    texto += df.to_csv(index=False)
+    
     return dict(content=texto, filename="RESULTADOS_DEL_SORTEO.csv"), {}
 
 if __name__ == '__main__':
