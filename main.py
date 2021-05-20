@@ -700,7 +700,7 @@ app.layout = html.Div([
 
         dbc.Row([
             html.Div([
-                html.H3('LISTA DE BOLETOS', style={'text-align':'center', 'padding':'1em'}),
+                html.H3('BOLETOS PARTICIPANTES EN EL SORTEO', style={'text-align':'center', 'padding':'1em'}),
                 
             ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
             
@@ -778,7 +778,7 @@ app.layout = html.Div([
         ]),
         
         html.Div([
-            html.H3('LISTA DE BOLETOS MEZCLADOS', style={'text-align':'center', 'padding':'1em'}), 
+            html.H3('BOLETOS PARTICIPANTES EN EL SORTEO', style={'text-align':'center', 'padding':'1em'}), 
         ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
 
         html.Div([
@@ -869,7 +869,7 @@ app.layout = html.Div([
         ]),
         
         html.Div([
-            html.H3('LISTA DE BOLETOS', style={'text-align':'center', 'padding':'1em'}),
+            html.H3('BOLETOS PARTICIPANTES EN EL SORTEO', style={'text-align':'center', 'padding':'1em'}),
             
         ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
 
@@ -1266,7 +1266,7 @@ def deshabilitarBotonSortearSiguienteParticipante(deshabilitar_sorteo_finalizado
     prevent_initial_call=True
 )
 def descargarResultadoAsignacionBoletos(btn_descarga_resultados, diccionario_resultados_sorteo_boletos): 
-    texto = "# Listado de boletos asignados a los participantes\n# del sorteo Trece Lotes\n\n"
+    texto = "# Listado de boletos asignados a empleados de confianza que participarán en el\n# \"Sorteo de 13 Lotes del Fraccionamiento Villa Universitaria\"\n\n"
     texto += pd.DataFrame.from_dict(diccionario_resultados_sorteo_boletos).to_csv(index=False)
     return dict(content=texto,filename="ASIGNACION_DE_BOLETOS.csv"), {}
 
@@ -1510,7 +1510,7 @@ def descargarResultadoGanadores(btn_descarga_resultados, diccionario_resultados_
     df['boleto_ganador'] = [f"\'{b}\'" for b in df['boleto_ganador']]
     df = df.drop(columns=['antiguedad', 'boletos']).to_csv(index=False)
 
-    texto = "# Listado de ganadores del sorteo Trece Lotes \n\n"
+    texto = "# Resultado de ganadores en el \n# \"Sorteo de 13 Lotes del Fraccionamiento Villa Universitaria\" \n\n"
     texto += df
     
     return dict(content=texto, filename="RESULTADOS_DEL_SORTEO.csv"), {}
