@@ -43,8 +43,9 @@ def sorteoBoletos(participantes, semilla):
 
     # ----- MEZCLA DE LOS BOLETOS -----
 
-    for _ in range(0, 10):
+    for _ in range(0, 10000):
         random.shuffle(boletos)
+    print("DIEZ MIL SHUFFLE")
 
     # ----- ASIGNACIÓN ALEATORIA DE LOS BOLETOS A CADA PARTICIPANTE -----
 
