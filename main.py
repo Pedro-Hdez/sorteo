@@ -939,8 +939,11 @@ def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
         if not tabla_participantes_fase1 and not total_participantes and not total_boletos:
             print("NO HAY NADA, SE VA A CALCULAR TODO")
             # ----- Creación del DataFrame de los participantes -----
-            df_participantes = pd.read_csv('./datos/participantes.csv')
+            df_participantes = pd.read_csv('./datos/PARTICIPANTES SORTEO 13 LOTES UNISON.csv')
+            df_participantes.columns = ['num_empleado', 'antiguedad', '']
+            df_participantes = df_participantes[['num_empleado', 'antiguedad']]
             df_participantes = df_participantes.sort_values(by=['antiguedad'], ascending=[False])
+            print(df_participantes)
             
             # ----- Creación del DataFrame de los terrenos -----
             df_terrenos = pd.read_csv('./datos/terrenos.csv')
