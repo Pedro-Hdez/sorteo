@@ -13,8 +13,7 @@ def sorteoBoletos(participantes, semilla):
 
         Parámetros
         ----------
-        - participantes: Objeto pd.DataFrame que contien las columnas 
-                         ['num_empleado', 'nombre', 'apellido', 'antiguedad'].
+        - participantes: Objeto pd.DataFrame que contien las columnas ['num_empleado', 'antiguedad'].
         
         - semilla: Objeto <str> que se utilizará como semilla para los procesos aleatorios
                    proporcionados por la librería 'random'.
@@ -22,27 +21,33 @@ def sorteoBoletos(participantes, semilla):
         Regresa
         -------
         - participantes: Objeto pd.DataFrame que contiene la asignación de los boletos para cada
-                         participante. Cuenta con las columnas 
-                         ['num_empleado', 'nombre', 'apellido', 'antiguedad', 'boletos].
+                         participante. Cuenta con las columnas  
+                         ['num_empleado', 'antiguedad', 'boletos].
         
         -boletos: Objeto <list> que contiene la lista de boletos desordenados que se han sorteado.
     """
+
+    # Se establece la semilla
     random.seed(semilla)
 
     # ----- GENERACIÓN DE LOS BOLETOS -----
+
     # Obtenemos el número total de boletos
     total_boletos = participantes['antiguedad'].sum()
 
-    # Se generan con el formato 001, 002, ..., 010, 011, ..., 099, 100, 101...
-    # Se calcula cuántos ceros necesitaremos
-    n_ceros = len(str(total_boletos+1))
+    # Se generan con el formato 0001, 0002, ..., 0010, 0011, ..., 0099, 0100, 0101..., 0999, 1000,...
+    # Primero, se calcula el número de ceros que necesitamos de acuerdo al número
+    # de dígitos que tenga el número total de boletos
+    n_ceros = len(str(total_boletos))
     boletos = [str(i).zfill(n_ceros) for i in range(1, total_boletos+1)]
 
-    # Se desordenan aleatoriamente 10 veces
+    # ----- MEZCLA DE LOS BOLETOS -----
+
     for _ in range(0, 10):
         random.shuffle(boletos)
 
     # ----- ASIGNACIÓN ALEATORIA DE LOS BOLETOS A CADA PARTICIPANTE -----
+
     # Obtenemos las antiguedades de cada participante
     antiguedades = participantes['antiguedad']
 
@@ -76,7 +81,7 @@ def sorteoTerrenos(semilla, participantes, terrenos, boletos_mezclados):
                    proporcionados por la librería 'random'.
 
         - participantes: Objeto pd.DataFrame que contien las columnas 
-                         ['num_empleado', 'nombre', 'apellido', 'antiguedad', 'boletos'].
+                         ['num_empleado', 'antiguedad', 'boletos'].
         
         - terrenos: Objeto pd.DataFrame que contien la columna ['Numero_Lote'].
 
@@ -86,10 +91,11 @@ def sorteoTerrenos(semilla, participantes, terrenos, boletos_mezclados):
         Regresa
         -------
         - resultados: Objeto pd.DataFrame que contiene a los ganadores de los terrenos. Cuenta con
-                      las columnas ['Numero_Lote', 'boleto_ganador', 'num_empleado', 'nombre', 
-                                    'apellido', 'antiguedad', 'boletos']
+                      las columnas ['Numero_Lote', 'boleto_ganador', 'num_empleado', 
+                                    'antiguedad', 'boletos']
     """
 
+    # Se establece la semilla
     random.seed(semilla)
 
     # Lista para almacenar los boletos ganadores de cada terreno
@@ -122,8 +128,8 @@ def sorteoTerrenos(semilla, participantes, terrenos, boletos_mezclados):
     terrenos['boleto_ganador'] = boletos_ganadores
     terrenos['num_empleado'] = num_empleados_ganadores
 
-
     # Combinamos el dataframe de los terrenos con el de los participantes
     resultados = pd.merge(terrenos, participantes, on="num_empleado", how="outer")
     resultados = resultados.head(len(terrenos.index))
+    
     return resultados
