@@ -53,7 +53,7 @@ semilla_modal_fase2 = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader(html.H2("Establecer semilla para el sorteo de los boletos"), style={'background-color':'#3D7EF2', 'color':'white'}),
+                dbc.ModalHeader(html.H2("Establecer semilla para la asignación de los números"), style={'background-color':'#3D7EF2', 'color':'white'}),
 
                 dbc.ModalBody(children=[
                     dbc.Form(id='semilla-modal-form',
@@ -124,10 +124,10 @@ afirmacion_sorteo_boletos_modal_fase2 = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader(html.H2('Mezcla de los boletos'), style={'background-color':'#3D7EF2', 'color':'white'}),
+                dbc.ModalHeader(html.H2('Mezcla de los números'), style={'background-color':'#3D7EF2', 'color':'white'}),
                 dbc.ModalBody(children=[
                     html.Div(children=[
-                        html.H3("LOS BOLETOS SE HAN TERMINADO DE MEZCLAR",style={'text-align':'center', 'padding':'1em'}),
+                        html.H3("LOS NÚMEROS SE HAN TERMINADO DE MEZCLAR",style={'text-align':'center', 'padding':'1em'}),
                     ]),
 
                     html.Div(
@@ -158,10 +158,10 @@ descarga_resultados_sorteo_boletos_modal = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader(html.H2("Descarga de los resultados del sorteo de boletos"), style={'background-color':'#3D7EF2', 'color':'white'}),
+                dbc.ModalHeader(html.H2("Descarga de los resultados de la asignación de números"), style={'background-color':'#3D7EF2', 'color':'white'}),
                 dbc.ModalBody(children=[
                     html.Div(children=[
-                        html.H3("El sorteo de los boletos ha finalizado",style={'text-align':'center', 'padding':'1em'}),
+                        html.H3("La asignación de los números ha finalizado",style={'text-align':'center', 'padding':'1em'}),
                         
                         html.Div([
                             dbc.Button("Descargar el archivo de resultados en formato csv", 
@@ -195,7 +195,7 @@ tabla_participantes_fase2 = dash_table.DataTable(
     id='tabla-participantes-fase2',
     columns=[{"name": 'No. Empleado', "id": 'num_empleado'},
             {'name':'Antigüedad', 'id':'antiguedad'},
-            {'name':'Boletos', 'id':'boletos'}],
+            {'name':'Números', 'id':'numeros'}],
     data=[],
 
     style_cell={
@@ -212,7 +212,7 @@ tabla_participantes_fase2 = dash_table.DataTable(
 
     style_cell_conditional=[
         {
-            'if': {'column_id': 'boletos'},
+            'if': {'column_id': 'numeros'},
             'textAlign': 'left',
             'width':200
         }
@@ -249,7 +249,7 @@ tabla_sorteo_fase2 = dash_table.DataTable(
 # Tabla para mostrar los boletos del participante actual
 tabla_boletos_fase2 = dash_table.DataTable(
     id='tabla-boletos-participante-actual',
-    columns=[{'name':'boletos', 'id':'boletos'}],
+    columns=[{'name':'numeros', 'id':'numeros'}],
     merge_duplicate_headers=True,
     data=[],
     style_cell={
@@ -378,10 +378,10 @@ descarga_resultados_sorteo_terrenos_modal = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader(html.H2("Descarga de los resultados del sorteo de terrenos"), style={'background-color':'#3D7EF2', 'color':'white'}),
+                dbc.ModalHeader(html.H2("Descarga de los resultados del sorteo de lotes"), style={'background-color':'#3D7EF2', 'color':'white'}),
                 dbc.ModalBody(children=[
                     html.Div(children=[
-                        html.H3("El sorteo de los terrenos ha finalizado",style={'text-align':'center', 'padding':'1em'}),
+                        html.H3("El sorteo de los lotes ha finalizado",style={'text-align':'center', 'padding':'1em'}),
                         
                         html.Div([
                             dbc.Button("Descargar el archivo de resultados en formato csv", 
@@ -410,7 +410,7 @@ descarga_resultados_sorteo_terrenos_modal = html.Div(
 tabla_ganadores_solo_terrenos = dash_table.DataTable(
     id='tabla-ganadores-solo-terrenos',
     columns=[{'name':['Terreno', 'No. Lote'], 'id':'numero_lote'},
-             {'name':['Boleto ganador', 'Número'], 'id':'boleto_ganador'},
+             {'name':['Número ganador', 'Número'], 'id':'numero_ganador'},
              {'name':['Participante ganador', 'No. Empleado'], 'id':'num_empleado'}],
     merge_duplicate_headers=True,
     data=[],
@@ -420,13 +420,6 @@ tabla_ganadores_solo_terrenos = dash_table.DataTable(
         'whiteSpace': 'pre-line',
         'height': 'auto',
     },
-    style_cell_conditional=[
-        {
-            'if': {'column_id': 'boletos'},
-            'textAlign': 'left',
-            'width':200
-        }
-    ],
     style_data={
         'whiteSpace': 'pre-line',
         'height': 'auto',
@@ -445,7 +438,7 @@ tabla_ganadores_solo_terrenos = dash_table.DataTable(
 tabla_ganadores_terrenos = dash_table.DataTable(
     id='tabla-ganadores',
     columns=[{'name':['Terreno', 'No. Lote'], 'id':'numero_lote'},
-             {'name':['Boleto ganador', 'Número'], 'id':'boleto_ganador'},
+             {'name':['Número ganador', 'Número'], 'id':'numero_ganador'},
              {'name':['Participante ganador', 'No. Empleado'], 'id':'num_empleado'},
             ],
     merge_duplicate_headers=True,
@@ -456,13 +449,6 @@ tabla_ganadores_terrenos = dash_table.DataTable(
         'whiteSpace': 'pre-line',
         'height': 'auto',
     },
-    style_cell_conditional=[
-        {
-            'if': {'column_id': 'boletos'},
-            'textAlign': 'left',
-            'width':200
-        }
-    ],
     style_data={
         'whiteSpace': 'pre-line',
         'height': 'auto',
@@ -510,7 +496,7 @@ leyenda_pila_datos_fase3 = html.Ul([
         ], style={'border':'3px solid #000000', 'float':'left', 'width':'20px', 'height':'20px', 
                   'margin':'2px', 'background-color':'#63CF55'}),
 
-        html.H5('Ganador del terreno actual', style={'float':'right'}),
+        html.H5('Ganador del lote actual', style={'float':'right'}),
 
     ], style={'float':'left', 'margin-right':'10px'})
 ], style={'list-style':'none'})
@@ -656,8 +642,8 @@ app.layout = html.Div([
     # Navbar de las fases
     dbc.NavbarSimple(
         children=[
-            dbc.NavItem(dbc.NavLink("Fase 1: Conteo de Boletos", href="/fase1", id='link-fase1')),
-            dbc.NavItem(dbc.NavLink("Fase 2: Asignación de Boletos", href="/fase2", id='link-fase2',
+            dbc.NavItem(dbc.NavLink("Fase 1: Conteo de Números", href="/fase1", id='link-fase1')),
+            dbc.NavItem(dbc.NavLink("Fase 2: Asignación de Números", href="/fase2", id='link-fase2',
                                      disabled=True)),
             dbc.NavItem(dbc.NavLink("Fase 3: Sorteo de Lotes", href="/fase3", id='link-fase3',
                                      disabled=True)),
@@ -679,7 +665,7 @@ app.layout = html.Div([
     # -------------------------------- Fase 1 ---------------------------------
     html.Div(id='div-fase1', children=[
         html.Div(children=[
-            html.H1("FASE 1: CONTEO DE BOLETOS",style={'text-align':'center', 'padding':'1em'}),
+            html.H1("FASE 1: CONTEO DE NÚMEROS",style={'text-align':'center', 'padding':'1em'}),
         ]),
 
         html.H3('TABLA DE PARTICIPANTES', style={'text-align':'center', 'padding':'1em'}),
@@ -694,13 +680,13 @@ app.layout = html.Div([
         dbc.Label(html.H3("", id='total-participantes-label'), style={'padding':'1em'}),
 
         html.Br(),
-        dbc.Label(html.H3("Total de boletos: ")),
+        dbc.Label(html.H3("Total de números: ")),
         dbc.Label(html.H3("", id='total-boletos-label'), style={'padding':'1em'}),
         
 
         dbc.Row([
             html.Div([
-                html.H3('BOLETOS PARTICIPANTES EN EL SORTEO', style={'text-align':'center', 'padding':'1em'}),
+                html.H3('NÚMEROS PARTICIPANTES EN EL SORTEO', style={'text-align':'center', 'padding':'1em'}),
                 
             ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
             
@@ -719,7 +705,7 @@ app.layout = html.Div([
         afirmacion_sorteo_boletos_modal_fase2, 
 
         html.Div(children=[
-            html.H1("FASE 2: ASIGNACIÓN DE BOLETOS",style={'text-align':'center', 'padding':'1em'}),
+            html.H1("FASE 2: ASIGNACIÓN DE NÚMEROS",style={'text-align':'center', 'padding':'1em'}),
         ]),
 
         html.Div([
@@ -742,13 +728,13 @@ app.layout = html.Div([
                 html.Div([
                     semilla_label, 
                     html.Br(),
-                    dbc.Button("Mezclar boletos", id="sorteo-boletos-btn", 
+                    dbc.Button("Mezclar números", id="sorteo-boletos-btn", 
                                color="success", className="mr-1", style={'margin-left':'15px'})
                 ],style={'text-align':'left', 'margin':'auto'}),
                 
 
                 html.Div([
-                    html.H3('PARTICIPANTES CON BOLETOS', style={'text-align':'center', 'padding':'1em'}),
+                    html.H3('PARTICIPANTES CON NÚMEROS ASIGNADOS', style={'text-align':'center', 'padding':'1em'}),
                     
                     tabla_participantes_fase2,
                     
@@ -761,7 +747,7 @@ app.layout = html.Div([
                     
                     tabla_sorteo_fase2,
 
-                    html.H3('LISTA DE BOLETOS DEL PARTICIPANTE ACTUAL', style={'text-align':'center'}),
+                    html.H3('LISTA DE NÚMEROS ASIGNADOS AL PARTICIPANTE ACTUAL', style={'text-align':'center'}),
 
                     tabla_boletos_fase2,
 
@@ -770,7 +756,7 @@ app.layout = html.Div([
                             id='participantes-restantes-label'),
                     html.Br(),
 
-                    dbc.Button("Los boletos no se han mezclado", id="siguiente-btn", color="primary", className="mr-1", style={'float':'right'}, disabled=True),
+                    dbc.Button("Los números no se han mezclado", id="siguiente-btn", color="primary", className="mr-1", style={'float':'right'}, disabled=True),
                     
                 ], style={"margin": "auto","width": "85%", 'padding':'1em'})
             ],md=6)
@@ -778,7 +764,7 @@ app.layout = html.Div([
         ]),
         
         html.Div([
-            html.H3('BOLETOS PARTICIPANTES EN EL SORTEO', style={'text-align':'center', 'padding':'1em'}), 
+            html.H3('NÚMEROS PARTICIPANTES EN EL SORTEO', style={'text-align':'center', 'padding':'1em'}), 
         ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
 
         html.Div([
@@ -838,14 +824,14 @@ app.layout = html.Div([
 
             dbc.Col([
                 html.Div([
-                    html.H3('NÚMERO DE LOTE ACTUAL', style={'text-align':'center'}),
+                    html.H3('NÚMERO DEL LOTE ACTUAL', style={'text-align':'center'}),
 
                     html.H3(children=[], style={'text-align':'center'}, 
                             id='terreno-actual-label'),
                     
                     html.Br(),
 
-                    html.H3('NÚMERO DEL BOLETO GANADOR', style={'text-align':'center'}),
+                    html.H3('NÚMERO GANADOR', style={'text-align':'center'}),
                     html.H3(children=[], style={'text-align':'center'}, 
                             id='boleto-ganador-label'),
                     
@@ -869,7 +855,7 @@ app.layout = html.Div([
         ]),
         
         html.Div([
-            html.H3('BOLETOS PARTICIPANTES EN EL SORTEO', style={'text-align':'center', 'padding':'1em'}),
+            html.H3('NÚMEROS PARTICIPANTES EN EL SORTEO', style={'text-align':'center', 'padding':'1em'}),
             
         ], style={"margin": "auto","width": "85%", 'padding':'1em'}),
 
@@ -946,7 +932,7 @@ def mostrarInfoFase1(link_fase1, tabla_participantes_fase1, total_participantes,
             print(df_participantes)
             
             # ----- Creación del DataFrame de los terrenos -----
-            df_terrenos = pd.read_csv('./datos/terrenos.csv')
+            df_terrenos = pd.read_csv('./datos/LOTES.csv')
 
             # Se calcula el total de participantes y el total de los boletos
             n_participantes = len(df_participantes.index)
@@ -1116,10 +1102,10 @@ def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla
             table_pila_boletos_fase2 = dbc.Table(table_body, bordered=True, id='tabla-pila-boletos-fase2')
             table_pila_boletos_fase3 = dbc.Table(table_body, bordered=True, id='tabla-pila-boletos-fase3')
 
-            return True, df_sorteo.to_dict('records'), table_pila_boletos_fase2, True, "Los boletos ya se han mezclado", True, table_pila_boletos_fase3, pila_boletos_mezclados
+            return True, df_sorteo.to_dict('records'), table_pila_boletos_fase2, True, "Los números ya se han mezclado", True, table_pila_boletos_fase3, pila_boletos_mezclados
         elif boton == 'ok-afirmacion-sorteo-boletos-btn-modal':
             print("OK")
-            return False, sorteo_boletos, pila_datos_children, True, "Los boletos ya se han mezclado", True, pila_datos_fase3, info_boletos_mezclados
+            return False, sorteo_boletos, pila_datos_children, True, "Los números ya se han mezclado", True, pila_datos_fase3, info_boletos_mezclados
     else:
         return dash.no_update
 
@@ -1152,7 +1138,7 @@ def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tab
         # la tabla de los boletos
         
         str_boletos = ""
-        for boleto in participante_actual['boletos']:
+        for boleto in participante_actual['numeros']:
             str_boletos += boleto + ", "
             
         
@@ -1160,7 +1146,7 @@ def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tab
         # Se crea su registro en la tabla de Participantes con Boleto y se agrega
         registro_participantes_con_boleto = {'num_empleado':participante_actual['num_empleado'],
                                              'antiguedad':participante_actual['antiguedad'],
-                                             'boletos':str_boletos[:-2]}
+                                             'numeros':str_boletos[:-2]}
         datos_tabla_participantes.append(registro_participantes_con_boleto)
         
         # Se crea su registro en la tabla de Participante Sorteado
@@ -1168,7 +1154,7 @@ def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tab
                                            'antiguedad':participante_actual['antiguedad']}]
         
         # Se crea el registro con la lista de los boletos para añadirla a la lista de sus boletos
-        registro_tabla_boletos = [{'boletos':str_boletos[:-2]}]
+        registro_tabla_boletos = [{'numeros':str_boletos[:-2]}]
 
         # En la pila de boletos, se ponen en color azul los boletos del participante actual
         # y en rojo los que ya se han ocupado por otros participantes
@@ -1183,7 +1169,7 @@ def mostrarSorteoBoletos(siguiente_btn, idx_participante, data_sorteo, datos_tab
                     pass
 
                 # Se les cambia el color a los boletos del participante actual (azul)
-                if casilla['props']['children'] in participante_actual['boletos']:
+                if casilla['props']['children'] in participante_actual['numeros']:
                     casilla['props']['style']['background-color'] = '#0093E8'
                     casilla['props']['style']['color'] = '#FFFFFF'
         
@@ -1247,14 +1233,14 @@ def deshabilitarBotonSortearSiguienteParticipante(deshabilitar_sorteo_finalizado
 
         if boton == 'info-deshabilitar-boton-sortear-participante-sorteo-finalizado':
             if deshabilitar_sorteo_finalizado:
-                return True, "Sorteo finalizado"
+                return True, "Asignación de números finalizada"
             else:
-                return False, "Sortear boletos al siguiente participante"
+                return False, "Asignar números al siguiente participante"
 
         elif boton == 'info-habilitar-boton-sortear-participante-primer-participante':
-            return False, "Comenzar el sorteo de boletos"
+            return False, "Comenzar la asignación de números"
         elif boton == 'info-habilitar-boton-sortear-participante-siguiente-participante':
-            return False, "Sortear boletos al siguiente participante"
+            return False, "Asignar números al siguiente participante"
     else:
         return dash.no_update
 
@@ -1268,7 +1254,7 @@ def deshabilitarBotonSortearSiguienteParticipante(deshabilitar_sorteo_finalizado
 def descargarResultadoAsignacionBoletos(btn_descarga_resultados, diccionario_resultados_sorteo_boletos): 
     texto = "# Listado de boletos asignados a empleados de confianza que participarán en el\n# \"Sorteo de 13 Lotes del Fraccionamiento Villa Universitaria\"\n\n"
     texto += pd.DataFrame.from_dict(diccionario_resultados_sorteo_boletos).to_csv(index=False)
-    return dict(content=texto,filename="ASIGNACION_DE_BOLETOS.csv"), {}
+    return dict(content=texto,filename="ASIGNACION_DE_NUMEROS.csv"), {}
 
 
 
@@ -1343,7 +1329,7 @@ def actualizarSemilla(link_fase3, ok_btn_modal_semilla, modal_childrens, info_se
             data_tabla_ganadores = []
             for num_lote in num_lotes:
                 registro = {'numero_lote':num_lote,
-                            'boleto_ganador': " ",
+                            'numero_ganador': " ",
                             'num_empleado': " "}
                 data_tabla_ganadores.append(registro)
 
@@ -1395,7 +1381,7 @@ def sortearGanadores(siguiente_terreno_btn, sorteo_terrenos_data,
 
             # Se crea el registro en la tabla de los ganadores
             registro_tabla_ganadores = {'numero_lote':terreno_actual['Numero_Lote'],
-                                        'boleto_ganador':terreno_actual['boleto_ganador'],
+                                        'numero_ganador':terreno_actual['numero_ganador'],
                                         'num_empleado':terreno_actual['num_empleado']}
             
             # Se reemplaza el registro del terreno correspondiente en el cuerpo de la tabla de
@@ -1425,8 +1411,8 @@ def sortearGanadores(siguiente_terreno_btn, sorteo_terrenos_data,
 
                     # Se ponen en azul todos los boletos del participante actual y en verde
                     # el boleto ganador
-                    if casilla['props']['children'] in terreno_actual['boletos']:
-                        if casilla['props']['children'] != terreno_actual['boleto_ganador']:
+                    if casilla['props']['children'] in terreno_actual['numeros']:
+                        if casilla['props']['children'] != terreno_actual['numero_ganador']:
                             casilla['props']['style']['background-color'] = '#0093E8'
                             casilla['props']['style']['color'] = '#FFFFFF'
                         else:
@@ -1438,7 +1424,7 @@ def sortearGanadores(siguiente_terreno_btn, sorteo_terrenos_data,
             terreno_actual_label = html.H3(terreno_actual['Numero_Lote'], style={"border": "1px solid #ccc"})
 
             # Se crea la etiqueta para el boleto ganador actual
-            boleto_ganador_label = html.H3(terreno_actual['boleto_ganador'], style={"border": "1px solid #ccc"})
+            boleto_ganador_label = html.H3(terreno_actual['numero_ganador'], style={"border": "1px solid #ccc"})
 
             # Se crea la etiqueta para los terrenos restantes 
             terrenos_restantes_label = html.H3(f"({len(df_sorteo_terrenos)-idx_terreno-1} restantes)")
@@ -1507,8 +1493,8 @@ def deshabilitarBotonSortearSiguienteBoleto(deshabilitar):
 )
 def descargarResultadoGanadores(btn_descarga_resultados, diccionario_resultados_sorteo_terrenos): 
     df = pd.DataFrame.from_dict(diccionario_resultados_sorteo_terrenos)
-    df['boleto_ganador'] = [f"\'{b}\'" for b in df['boleto_ganador']]
-    df = df.drop(columns=['antiguedad', 'boletos']).to_csv(index=False)
+    df['numero_ganador'] = [f"\'{b}\'" for b in df['numero_ganador']]
+    df = df.drop(columns=['antiguedad', 'numeros']).to_csv(index=False)
 
     texto = "# Resultado de ganadores en el \n# \"Sorteo de 13 Lotes del Fraccionamiento Villa Universitaria\" \n\n"
     texto += df

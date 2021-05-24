@@ -22,57 +22,58 @@ def sorteoBoletos(participantes, semilla):
         -------
         - participantes: Objeto pd.DataFrame que contiene la asignación de los boletos para cada
                          participante. Cuenta con las columnas  
-                         ['num_empleado', 'antiguedad', 'boletos].
+                         ['num_empleado', 'antiguedad', 'numeros'].
         
-        -boletos: Objeto <list> que contiene la lista de boletos desordenados que se han sorteado.
+        - numeros: Objeto <list> que contiene la lista de números desordenados que se han asignado.
     """
 
     # Se establece la semilla
     random.seed(semilla)
 
-    # ----- GENERACIÓN DE LOS BOLETOS -----
+    # ----- GENERACIÓN DE LOS NÚMEROS -----
 
     # Obtenemos el número total de boletos
-    total_boletos = participantes['antiguedad'].sum()
+    total_numeros = participantes['antiguedad'].sum()
 
     # Se generan con el formato 0001, 0002, ..., 0010, 0011, ..., 0099, 0100, 0101..., 0999, 1000,...
-    # Primero, se calcula el número de ceros que necesitamos de acuerdo al número
+    # Primero, se calcula la cantidad de ceros que necesitamos de acuerdo a la cantidad
     # de dígitos que tenga el número total de boletos
-    n_ceros = len(str(total_boletos))
-    boletos = [str(i).zfill(n_ceros) for i in range(1, total_boletos+1)]
+    n_ceros = len(str(total_numeros))
+    numeros = [str(i).zfill(n_ceros) for i in range(1, total_numeros+1)]
 
-    # ----- MEZCLA DE LOS BOLETOS -----
+    # ----- MEZCLA DE LOS NÚMERO -----
 
+    # Los números se mezclan aleatoriamente 10,000 veces
     for _ in range(0, 10000):
-        random.shuffle(boletos)
-    print("DIEZ MIL SHUFFLE")
+        random.shuffle(numeros)
 
-    # ----- ASIGNACIÓN ALEATORIA DE LOS BOLETOS A CADA PARTICIPANTE -----
+    # ----- ASIGNACIÓN ALEATORIA DE LOS NÚMEROSS A CADA PARTICIPANTE -----
 
     # Obtenemos las antiguedades de cada participante
     antiguedades = participantes['antiguedad']
 
-    # Lista en donde se guardará la selección de boletos para cada participante
-    # y que posteriormente se añadirá al DataFrame
-    boletos_df = []
+    # Lista en donde se guardará la selección de números para cada participante
+    # y que posteriormente se añadirá al DataFrame 'participantes'
+    numeros_df = []
 
-    # Generamos una copia de la lista de boletos desordenada
-    boletos_copia = [boleto for boleto in boletos]
+    # Generamos una copia de la lista de números desordenada
+    numeros_copia = [numero for numero in numeros]
 
+    # Se recorre la lista de antiguedades para asignar la respectiva cantidad de números
     for n_antiguedad in antiguedades:
         # Se toman aleatoriamente el número de boletos correspondiente al participante actual
-        seleccion_boletos = random.sample(boletos_copia, n_antiguedad)
-        boletos_df.append(seleccion_boletos)
+        seleccion_numeros = random.sample(numeros_copia, n_antiguedad)
+        numeros_df.append(seleccion_numeros)
         
-        # Se eliminan los boletos seleccionados
-        boletos_copia = [boleto for boleto in boletos_copia if boleto not in seleccion_boletos]
+        # Se eliminan los boletos seleccionados de la pila de números
+        numeros_copia = [numero for numero in numeros_copia if numero not in seleccion_numeros]
 
-    # Se añade la columna de "boletos" al dataframe de participantes
-    participantes['boletos'] = boletos_df
+    # Se añade la columna de "numeros" al dataframe de participantes
+    participantes['numeros'] = numeros_df
     
-    return participantes, boletos
+    return participantes, numeros
 
-def sorteoTerrenos(semilla, participantes, terrenos, boletos_mezclados):
+def sorteoTerrenos(semilla, participantes, terrenos, numeros_mezclados):
     """
         Esta función realiza el sorteo aleatorio de los terrenos.
 
@@ -82,51 +83,54 @@ def sorteoTerrenos(semilla, participantes, terrenos, boletos_mezclados):
                    proporcionados por la librería 'random'.
 
         - participantes: Objeto pd.DataFrame que contien las columnas 
-                         ['num_empleado', 'antiguedad', 'boletos'].
+                         ['num_empleado', 'antiguedad', 'numeros'].
         
         - terrenos: Objeto pd.DataFrame que contien la columna ['Numero_Lote'].
 
-        - boletos_mezclados: Objeto <list> que contiene la lista de boletos desordenados que se han 
-                             sorteado.
+        - numeros_mezclados: Objeto <list> que contiene la lista de números desordenados que se han 
+                             asignado.
         
         Regresa
         -------
         - resultados: Objeto pd.DataFrame que contiene a los ganadores de los terrenos. Cuenta con
-                      las columnas ['Numero_Lote', 'boleto_ganador', 'num_empleado', 
-                                    'antiguedad', 'boletos']
+                      las columnas ['Numero_Lote', 'numero_ganador', 'num_empleado', 
+                                    'antiguedad', 'numeros']
     """
 
     # Se establece la semilla
     random.seed(semilla)
 
-    # Lista para almacenar los boletos ganadores de cada terreno
-    boletos_ganadores = []
+    # Lista para almacenar los números ganadores de cada terreno
+    numeros_ganadores = []
 
-    # Lista para almacenar a los participantes gandores de cada terreno
+    # Lista para almacenar los números de empleado de los participantes gandores
     num_empleados_ganadores = []
 
-    # Creamos una copia de los boletos
-    boletos_copia = [boleto for boleto in boletos_mezclados]
+    # Creamos una copia de los números mezclados
+    numeros_copia = [numero for numero in numeros_mezclados]
 
+    # Se recorren los terrenos para asignar un ganador a cada uno
     for terreno in terrenos['Numero_Lote'].values:    
-        # Se selecciona un boleto aleatoriamente y se añade a la lista de boletos ganadores
-        boleto_ganador = random.choice(boletos_copia)
-        boletos_ganadores.append(boleto_ganador)
+        # Se selecciona el número ganado aleatoriamente y se añade a la lista de números ganadores
+        numero_ganador = random.choice(numeros_copia)
+        numeros_ganadores.append(numero_ganador)
         
-        # Se busca el boleto ganador en la lista de boletos del DataFrame 'participantes'.
-        registro_ganador = participantes[participantes['boletos'].apply(lambda x: boleto_ganador in x)]
+        # Se busca el número ganador en la lista de boletos del DataFrame 'participantes'.
+        registro_ganador = participantes[participantes['numeros'].apply(lambda x: numero_ganador in x)]
         
-        # Extraemos el número de trabajador del participante ganador y lo añadimos a la lista
+        # Extraemos el número de trabajador del participante ganador y lo añadimos a la lista de 
+        # números de empleado de participantes ganadores
         num_empleados_ganadores.append(registro_ganador['num_empleado'].values[0])
         
-        # Extraemos la lista de los boletos del ganador
-        boletos_a_eliminar = registro_ganador['boletos'].values[0]
+        # Extraemos la lista de los números del participante ganador
+        numeros_a_eliminar = registro_ganador['numeros'].values[0]
         
-        # Eliminamos todos los boletos del ganador de los boletos disponibles
-        boletos_copia = [boleto for boleto in boletos_copia if boleto not in boletos_a_eliminar]
+        # Eliminamos todos los números pertenecientes al participante ganador 
+        # de la pila de números disponibles
+        numeros_copia = [numero for numero in numeros_copia if numero not in numeros_a_eliminar]
 
-    # Añadimos al DataFrame de los terrenos a los ganadores
-    terrenos['boleto_ganador'] = boletos_ganadores
+    # Añadimos al DataFrame de los terrenos los datos de los ganadores
+    terrenos['numero_ganador'] = numeros_ganadores
     terrenos['num_empleado'] = num_empleados_ganadores
 
     # Combinamos el dataframe de los terrenos con el de los participantes
