@@ -15,7 +15,7 @@ import math
 import time
 
 
-from sorteo import sorteoBoletos, sorteoTerrenos
+from sorteo import sorteoBoletos, sorteoLotes
 
 external_stylesheets = [dbc.themes.COSMO]
 
@@ -1319,7 +1319,7 @@ def actualizarSemilla(link_fase3, ok_btn_modal_semilla, modal_childrens, info_se
             df_terrenos = pd.DataFrame.from_dict(info_terrenos)
 
             # Se realiza el sorteo de los terrenos con la semilla dada
-            df_sorteo_terrenos = sorteoTerrenos(semilla, pd.DataFrame.from_dict(sorteo_boletos_data), df_terrenos, pila_boletos_mezclados)
+            df_sorteo_terrenos = sorteoLotes(semilla, pd.DataFrame.from_dict(sorteo_boletos_data), df_terrenos, pila_boletos_mezclados)
 
             # Se crea la tabla vacía de los ganadores
             # Se extraen los números de lote del terreno porque es lo único que nos interesa

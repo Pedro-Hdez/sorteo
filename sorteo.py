@@ -73,7 +73,7 @@ def sorteoBoletos(participantes, semilla):
     
     return participantes, numeros
 
-def sorteoTerrenos(semilla, participantes, terrenos, numeros_mezclados):
+def sorteoLotes(semilla, participantes, terrenos, numeros_mezclados):
     """
         Esta función realiza el sorteo aleatorio de los terrenos.
 
