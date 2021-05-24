@@ -5,7 +5,7 @@
 import random # Para los procedimientos aleatorios
 import pandas as pd # Para el manejo de los datos
 
-def sorteoBoletos(participantes, semilla):
+def sorteoNumeros(participantes, semilla):
     """
         Esta función realiza el sorteo aleatorio de boletos entre todos
         los participantes. El número de boletos es igual a la sumatoria de las antigüedades de los

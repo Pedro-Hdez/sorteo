@@ -15,7 +15,7 @@ import math
 import time
 
 
-from sorteo import sorteoBoletos, sorteoLotes
+from sorteo import sorteoNumeros, sorteoLotes
 
 external_stylesheets = [dbc.themes.COSMO]
 
@@ -1077,7 +1077,7 @@ def sortearBoletos(sorteo_boletos_btn, ok_btn_sorteo_boletos_modal, info_semilla
             # Se obtiene el DataFrame de la fase anterior
             df_participantes = pd.DataFrame.from_dict(info_tabla_participantes)
             # Se realiza el sorteo de los boletos con la semilla dada.
-            df_sorteo, pila_boletos_mezclados = sorteoBoletos(df_participantes, info_semilla)
+            df_sorteo, pila_boletos_mezclados = sorteoNumeros(df_participantes, info_semilla)
             print(df_sorteo)
 
             n_boletos = len(pila_boletos_mezclados) # Número de boletos
