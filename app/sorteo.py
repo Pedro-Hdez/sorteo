@@ -41,35 +41,55 @@ def sorteoNumeros(participantes, semilla):
     n_ceros = len(str(total_numeros))
     numeros = [str(i).zfill(n_ceros) for i in range(1, total_numeros+1)]
 
-    # ----- MEZCLA DE LOS NÚMERO -----
+    # ----- MEZCLA DE LOS NÚMEROS -----
 
     # Los números se mezclan aleatoriamente 10,000 veces
     for _ in range(0, 10000):
         random.shuffle(numeros)
 
-    # ----- ASIGNACIÓN ALEATORIA DE LOS NÚMEROSS A CADA PARTICIPANTE -----
+    # ----- ASIGNACIÓN ALEATORIA DE LOS NÚMEROS A CADA PARTICIPANTE -----
+    
+    # Se obtiene el número de participantes total
+    n_participantes = len(participantes.index) 
+    # Se obtiene la lista de números de empleado
+    lista_numeros_empleado = list(participantes['num_empleado'])
+    # Se obtiene la lista de antigüedades
+    lista_antiguedades = list(participantes['antiguedad'])
 
-    # Obtenemos las antiguedades de cada participante
-    antiguedades = participantes['antiguedad']
-
-    # Lista en donde se guardará la selección de números para cada participante
-    # y que posteriormente se añadirá al DataFrame 'participantes'
+    # Listas en donde se almacenarán los valores, por separado, del sorteo
+    # de boletos para posteriormente crear un DataFrame a partir de estas listas
+    num_empleado_df = []
+    antiguedad_df = []
     numeros_df = []
 
-    # Generamos una copia de la lista de números desordenada
+    # Se toma una copia de la lista de números
     numeros_copia = [numero for numero in numeros]
 
-    # Se recorre la lista de antiguedades para asignar la respectiva cantidad de números
-    for n_antiguedad in antiguedades:
-        # Se toman aleatoriamente el número de boletos correspondiente al participante actual
-        seleccion_numeros = random.sample(numeros_copia, n_antiguedad)
-        numeros_df.append(seleccion_numeros)
-        
-        # Se eliminan los boletos seleccionados de la pila de números
+    # Se repite la asignación de números tantas veces como participantes existan
+    for _ in range(n_participantes):
+        # Se obtiene un índice aleatorio para tomar un número de empleado y su correspondiente
+        # antigüedad
+        idx = random.randint(0, len(lista_numeros_empleado)-1)
+        # El número de empleado y la antigüedad se obtienen al mismo tiempo que se eliminan de sus
+        # listas con la función pop()
+        num_empleado = lista_numeros_empleado.pop(idx)
+        antiguedad = lista_antiguedades.pop(idx)
+        # Se toman aleatoriamente tantos números como años de antigüedad tenga el participante
+        seleccion_numeros = random.sample(numeros_copia, antiguedad)
+        # Se eliminan los números seleccionados de la pila de números disponibles
         numeros_copia = [numero for numero in numeros_copia if numero not in seleccion_numeros]
-
-    # Se añade la columna de "numeros" al dataframe de participantes
-    participantes['numeros'] = numeros_df
+        # Se almacenan los datos actuales (num_empleado, antiguedad y numeros) en sus listas
+        # correspondientes
+        num_empleado_df.append(num_empleado)
+        antiguedad_df.append(antiguedad)
+        numeros_df.append(seleccion_numeros)
+    
+    # Una vez asignados los números a todos los participantes, creamos un dataFrame con los
+    # valores que hemos obtenido
+    participantes = pd.DataFrame(data={'num_empleado':num_empleado_df,
+                                       'antiguedad':antiguedad_df,
+                                       'numeros':numeros_df},
+                                 index=None)
     
     return participantes, numeros
 
@@ -138,3 +158,20 @@ def sorteoLotes(semilla, participantes, terrenos, numeros_mezclados):
     resultados = resultados.head(len(terrenos.index))
     
     return resultados
+
+
+def sorteoOrdenPrelacion(semilla, participantes_total, participantes_ganadores):
+    # Se establece la semilla
+    random.seed(semilla)
+    
+    # Se excluyen de la lista de participantes los números de empleado que hayan sido ganadores
+    participantes_prelacion = [p for p in participantes_total if p not in participantes_ganadores]
+
+    # Los participantes no ganadores se mezclan aleatoriamente 10,000 veces
+    for _ in range(0, 10000):
+        random.shuffle(participantes_prelacion)
+    
+    # Se crea un DataFrame para el orden de prelacion
+    df_orden_prelacion = pd.DataFrame(data={'num_empleado':participantes_prelacion})
+
+    return df_orden_prelacion
