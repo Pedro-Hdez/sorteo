@@ -1,14 +1,14 @@
 """
-    Este script contiene las funciones para sortear los boletos y sortear
-    los terrenos.
+    Este script contiene las funciones para sortear los numeros, sortear
+    los lotes y establecer el orden de prelación con la lista de los participantes no ganadores.
 """
 import random # Para los procedimientos aleatorios
 import pandas as pd # Para el manejo de los datos
 
 def sorteoNumeros(participantes, semilla):
     """
-        Esta función realiza el sorteo aleatorio de boletos entre todos
-        los participantes. El número de boletos es igual a la sumatoria de las antigüedades de los
+        Esta función realiza el sorteo aleatorio de numeros entre todos
+        los participantes. El número de numeros es igual a la sumatoria de las antigüedades de los
         participantes.
 
         Parámetros
@@ -20,7 +20,7 @@ def sorteoNumeros(participantes, semilla):
         
         Regresa
         -------
-        - participantes: Objeto pd.DataFrame que contiene la asignación de los boletos para cada
+        - participantes: Objeto pd.DataFrame que contiene la asignación de los numeros para cada
                          participante. Cuenta con las columnas  
                          ['num_empleado', 'antiguedad', 'numeros'].
         
@@ -32,12 +32,12 @@ def sorteoNumeros(participantes, semilla):
 
     # ----- GENERACIÓN DE LOS NÚMEROS -----
 
-    # Obtenemos el número total de boletos
+    # Obtenemos el número total de numeros
     total_numeros = participantes['antiguedad'].sum()
 
     # Se generan con el formato 0001, 0002, ..., 0010, 0011, ..., 0099, 0100, 0101..., 0999, 1000,...
     # Primero, se calcula la cantidad de ceros que necesitamos de acuerdo a la cantidad
-    # de dígitos que tenga el número total de boletos
+    # de dígitos que tenga el número total de numeros
     n_ceros = len(str(total_numeros))
     numeros = [str(i).zfill(n_ceros) for i in range(1, total_numeros+1)]
 
@@ -57,7 +57,7 @@ def sorteoNumeros(participantes, semilla):
     lista_antiguedades = list(participantes['antiguedad'])
 
     # Listas en donde se almacenarán los valores, por separado, del sorteo
-    # de boletos para posteriormente crear un DataFrame a partir de estas listas
+    # de numeros para posteriormente crear un DataFrame a partir de estas listas
     num_empleado_df = []
     antiguedad_df = []
     numeros_df = []
@@ -93,9 +93,9 @@ def sorteoNumeros(participantes, semilla):
     
     return participantes, numeros
 
-def sorteoLotes(semilla, participantes, terrenos, numeros_mezclados):
+def sorteoLotes(semilla, participantes, lotes, numeros_mezclados):
     """
-        Esta función realiza el sorteo aleatorio de los terrenos.
+        Esta función realiza el sorteo aleatorio de los lotes.
 
         Parámetros
         ----------
@@ -105,14 +105,14 @@ def sorteoLotes(semilla, participantes, terrenos, numeros_mezclados):
         - participantes: Objeto pd.DataFrame que contien las columnas 
                          ['num_empleado', 'antiguedad', 'numeros'].
         
-        - terrenos: Objeto pd.DataFrame que contien la columna ['Numero_Lote'].
+        - lotes: Objeto pd.DataFrame que contien la columna ['Numero_Lote'].
 
         - numeros_mezclados: Objeto <list> que contiene la lista de números desordenados que se han 
                              asignado.
         
         Regresa
         -------
-        - resultados: Objeto pd.DataFrame que contiene a los ganadores de los terrenos. Cuenta con
+        - resultados: Objeto pd.DataFrame que contiene a los ganadores de los lotes. Cuenta con
                       las columnas ['Numero_Lote', 'numero_ganador', 'num_empleado', 
                                     'antiguedad', 'numeros']
     """
@@ -129,13 +129,13 @@ def sorteoLotes(semilla, participantes, terrenos, numeros_mezclados):
     # Creamos una copia de los números mezclados
     numeros_copia = [numero for numero in numeros_mezclados]
 
-    # Se recorren los terrenos para asignar un ganador a cada uno
-    for terreno in terrenos['Numero_Lote'].values:    
+    # Se recorren los lotes para asignar un ganador a cada uno
+    for lote in lotes['Numero_Lote'].values:    
         # Se selecciona el número ganado aleatoriamente y se añade a la lista de números ganadores
         numero_ganador = random.choice(numeros_copia)
         numeros_ganadores.append(numero_ganador)
         
-        # Se busca el número ganador en la lista de boletos del DataFrame 'participantes'.
+        # Se busca el número ganador en la lista de numeros del DataFrame 'participantes'.
         registro_ganador = participantes[participantes['numeros'].apply(lambda x: numero_ganador in x)]
         
         # Extraemos el número de trabajador del participante ganador y lo añadimos a la lista de 
@@ -149,13 +149,13 @@ def sorteoLotes(semilla, participantes, terrenos, numeros_mezclados):
         # de la pila de números disponibles
         numeros_copia = [numero for numero in numeros_copia if numero not in numeros_a_eliminar]
 
-    # Añadimos al DataFrame de los terrenos los datos de los ganadores
-    terrenos['numero_ganador'] = numeros_ganadores
-    terrenos['num_empleado'] = num_empleados_ganadores
+    # Añadimos al DataFrame de los lotes los datos de los ganadores
+    lotes['numero_ganador'] = numeros_ganadores
+    lotes['num_empleado'] = num_empleados_ganadores
 
-    # Combinamos el dataframe de los terrenos con el de los participantes
-    resultados = pd.merge(terrenos, participantes, on="num_empleado", how="outer")
-    resultados = resultados.head(len(terrenos.index))
+    # Combinamos el dataframe de los lotes con el de los participantes
+    resultados = pd.merge(lotes, participantes, on="num_empleado", how="outer")
+    resultados = resultados.head(len(lotes.index))
     
     return resultados
 
@@ -188,7 +188,7 @@ def sorteoOrdenPrelacion(semilla, participantes_total, participantes_ganadores):
     participantes_prelacion = [p for p in participantes_total if p not in participantes_ganadores]
 
     # Los participantes no ganadores se mezclan aleatoriamente 10,000 veces
-    for _ in range(0, 10000):
+    for _ in range(10000):
         random.shuffle(participantes_prelacion)
     
     # Se crea un DataFrame para el orden de prelacion
