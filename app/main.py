@@ -15,7 +15,7 @@ import math
 import time
 
 
-from sorteo import sorteoNumeros, sorteoLotes
+from sorteo import sorteoNumeros, sorteoLotes, sorteoOrdenPrelacion
 
 external_stylesheets = [dbc.themes.COSMO]
 
@@ -500,6 +500,107 @@ leyenda_pila_datos_fase3 = html.Ul([
 
     ], style={'float':'left', 'margin-right':'10px'})
 ], style={'list-style':'none'})
+
+
+# -------------------------- OBJETOS DE LA FASE 4 ----------------------------
+
+# Modal para pedir la semilla
+semilla_modal_fase4 = html.Div(
+    [        
+        dbc.Modal(
+            [
+                dbc.ModalHeader(html.H2("Establecer semilla para la definición del orden de prelación"), style={'background-color':'#3D7EF2', 'color':'white'}),
+
+                dbc.ModalBody(children=[
+                    dbc.Form(id='semilla-modal-form-fase4',
+                        children=[
+                            dbc.FormGroup(
+                                [
+                                    dbc.Label("Día: ", className="mr-2", style={"padding":"2em"}),
+                                    dbc.Input(type="text")
+                                ],
+                                className="mr-3"
+                            ),
+
+                            dbc.FormGroup(
+                                [
+                                    dbc.Label("Mes: ", className="mr-2", style={"padding":"2em"}),
+                                    dbc.Input(type="text")
+                                ],
+                                className="mr-3"
+                            ),
+
+                            dbc.FormGroup(
+                                [
+                                    dbc.Label("Año: ", className="mr-2", style={"padding":"2em"}),
+                                    dbc.Input(type="text")
+                                ],
+                                className="mr-3"
+                            ),
+
+                            dbc.FormGroup(
+                                [
+                                    dbc.Label("Hora: ", className="mr-2", style={"padding":"2em"}),
+                                    dbc.Input(type="text")
+                                ],
+                                className="mr-3"
+                            ),
+
+                            dbc.FormGroup(
+                                [
+                                    dbc.Label("Minuto: ", className="mr-2", style={"padding":"2em"}),
+                                    dbc.Input(type="text")
+                                ],
+                                className="mr-3"
+                            )
+                        ],inline=True
+                    ),
+                    html.Div(
+                    [
+                        dbc.Button("Confirmar", id="ok-btn-modal-semilla-fase4", color="success", 
+                                style={'margin':"1em", 'float':'right'},)
+                    ]
+                    )
+                ], style={'background-color':'#EBEBEB'},),
+            ],
+            id="semilla-modal-fase4",
+            is_open=False,
+            size="xl", #sm, lg, xl
+            backdrop=False, # to be or not to be closed by clicking on backdrop
+            scrollable=True, # Scrollable if modal has a lot of text
+            centered=False, 
+            fade=True,
+            keyboard=False
+        )
+    ]
+)
+
+# Tabla para mostrar La lista de los terrenos sin ganadores
+tabla_orden_prelacion = dash_table.DataTable(
+    id='tabla-orden-prelacion',
+    columns=[{'name':'No. Empleado', 'id':'num_empleado'}],
+    merge_duplicate_headers=True,
+    data=[],
+    style_cell={
+        'text_align':'center',
+        'minWidth': 90, 'maxWidth': 90, 'width': 90,
+        'whiteSpace': 'pre-line',
+        'height': 'auto',
+    },
+    style_data={
+        'whiteSpace': 'pre-line',
+        'height': 'auto',
+    },
+    style_header={
+        'backgroundColor': 'white',
+        'fontWeight': 'bold',
+        'text-align':'center',
+    },
+    fixed_rows={'headers': True},
+    style_table={'height': 800},
+)
+
+
 # ***************************** PÁGINA PRINCIPAL ******************************
 
 app.layout = html.Div([
@@ -632,6 +733,18 @@ app.layout = html.Div([
         id='info-tabla-ganadores2', data=None
     ),
 
+
+    # ----- Para la fase 4 -----
+    # Para almacenar la semilla para definir el orden de prelación
+    dcc.Store(
+        id='info-semilla-fase4', data='Sin semilla'
+    ),
+
+    dcc.Store(
+        id='info-orden-prelacion', data=None
+    ),
+
+
     # Modal para pedir una semilla
     semilla_modal_fase2,
     
@@ -646,6 +759,8 @@ app.layout = html.Div([
             dbc.NavItem(dbc.NavLink("Fase 2: Asignación de Números", href="/fase2", id='link-fase2',
                                      disabled=True)),
             dbc.NavItem(dbc.NavLink("Fase 3: Sorteo de Lotes", href="/fase3", id='link-fase3',
+                                     disabled=True)),
+            dbc.NavItem(dbc.NavLink("Fase 4: Definición del Orden de Prelación", href="/fase4", id='link-fase4',
                                      disabled=True)),
         ],
         brand="Fases del Sorteo",
@@ -867,7 +982,55 @@ app.layout = html.Div([
         ], style={"position":"relative", "height":"800px", "overflow":"auto", "display":"block", "justify":"center", "margin": "0 auto", "width": "95%"}, id='div-pila-datos-fase3'),
  
 
-    ], style={'display':"none"})
+    ], style={'display':"none"}),
+
+    # -------------------------------- Fase 4 ---------------------------------
+
+    html.Div(id='div-fase4', children=[
+        
+        semilla_modal_fase4,
+  
+        html.Div(children=[
+            html.H1("FASE 4: DEFINICIÓN DEL ORDEN DE PRELACIÓN",style={'text-align':'center', 'padding':'1em'}),
+        ]),
+
+        html.Div([
+            html.H4([
+                "Los resultados se publicarán en la siguiente página: ",
+                dcc.Link(
+                    href="https://diyecora.unison.mx/sorteo13lotes",
+                    target='blank'
+                ),
+            ],style={'text-align':'center'}),
+        ], id='link-resultados-fase4', style={'display':'none'}),
+        
+        dbc.Row([
+            dbc.Col([
+                html.Div([
+                    dbc.Label(html.H3("Semilla: Sin semilla", id='label-semilla-fase4'), 
+                          style={'text-align':'center', 'padding':'1em'}),
+                    html.Br(),
+                    dbc.Button("Mezclar participantes no ganadores", id="sorteo-prelacion-btn", 
+                               color="success", className="mr-1", style={'margin-left':'15px'})
+                ],style={'text-align':'left', 'margin':'auto'}),
+            ],md=6),
+            
+        ]),
+        
+        html.Div([
+            html.H3('ORDEN DE PRELACIÓN', style={'text-align':'center', 'padding':'1em'}), 
+            tabla_orden_prelacion,
+        ], style={"margin": "auto","width": "50%", 'padding':'1em'}),
+
+        html.Div([
+            #dbc.Button("Descargar orden de prelación", id="descargar-orden-prelacion-btn", color="primary", className="mr-1", style={'float':'right'}),
+            dbc.Button("El orden de prelación no se ha establecido", id="descargar-orden-prelacion-btn", disabled=True, color="primary", className="mr-1", style={'float':'right'}),
+            dcc.Download(id="descarga-resultado-orden-prelacion")
+        ], style={"margin": "auto","width": "55%", 'padding':'1em'}),
+
+        
+
+    ], style={'display':"none"}),
 ])
 
 
@@ -879,18 +1042,21 @@ app.layout = html.Div([
 #       fase ocultando o mostrando elementos 
 @app.callback(
     [Output('div-principal', 'style'), Output('div-fase1', 'style'), Output('div-fase2', 'style'),
-     Output('div-fase3', 'style'), Output('link-fase1', 'style'), Output('link-fase2', 'style'), Output('link-fase3', 'style')],
+     Output('div-fase3', 'style'), Output('div-fase4', 'style'), Output('link-fase1', 'style'), 
+     Output('link-fase2', 'style'), Output('link-fase3', 'style'), Output('link-fase4', 'style')],
     Input('url', 'pathname')
 )
 def cambiarFase(url):
     if url == '/':
-        return {}, {'display':'none'}, {'display':'none'}, {'display':'none'}, {}, {}, {}
+        return {}, {'display':'none'}, {'display':'none'}, {'display':'none'}, {'display':'none'}, {}, {}, {}, {}
     if url == '/fase1':
-        return {'display':'none'}, {"margin": "auto","width": "85%", 'padding':'1em'}, {'display':'none'}, {'display':'none'}, {"font-weight": "1000", 'color':'white'}, {}, {}
+        return {'display':'none'}, {"margin": "auto","width": "85%", 'padding':'1em'}, {'display':'none'}, {'display':'none'}, {'display':'none'}, {"font-weight": "1000", 'color':'white'}, {}, {}, {}
     elif url == '/fase2':
-        return {'display':'none'}, {'display':'none'}, {}, {'display':'none'}, {}, {"font-weight": "1000", 'color':'white'}, {}
+        return {'display':'none'}, {'display':'none'}, {}, {'display':'none'}, {'display':'none'}, {}, {"font-weight": "1000", 'color':'white'}, {}, {}
     elif url == '/fase3':
-        return {'display':'none'}, {'display':'none'}, {'display':'none'}, {}, {}, {}, {"font-weight": "1000", 'color':'white'}
+        return {'display':'none'}, {'display':'none'}, {'display':'none'}, {}, {'display':'none'}, {}, {}, {"font-weight": "1000", 'color':'white'}, {}
+    elif url == '/fase4':
+        return {'display':'none'}, {'display':'none'}, {'display':'none'}, {'display':'none'}, {}, {}, {}, {}, {"font-weight": "1000", 'color':'white'}
 
     # Objeto para almacenar las columnas de la tabla de la pila de boletos
     dcc.Store(
@@ -1350,7 +1516,7 @@ def actualizarSemilla(link_fase3, ok_btn_modal_semilla, modal_childrens, info_se
      Output('info-abrir-modal-descargar-resultados-sorteo-terrenos', 'data'),
      Output('div-tabla-ganadores', 'style'), Output('div-tabla-ganadores-solo-terrenos', 'style'),
      Output('info-tabla-ganadores2', 'data'),
-     Output('info-deshabilitar-boton-sortear-terreno','data')],
+     Output('info-deshabilitar-boton-sortear-terreno','data'), Output('link-fase4', 'disabled')],
 
     Input('siguiente-terreno-btn', 'n_clicks'),
 
@@ -1432,12 +1598,14 @@ def sortearGanadores(siguiente_terreno_btn, sorteo_terrenos_data,
             # Se decide si ya es necesario bloquear el botón de "siguiente participante"
             abrir_modal_descarga_resultados = False
             deshabilitar_boton_sortear_terreno = False
+            deshabilitar_fase4 = True
             if idx_terreno == len(df_sorteo_terrenos)- 1:
                 print("SE ACABA DE SORTEAR EL ULTIMO TERRENO")
                 abrir_modal_descarga_resultados = True
                 deshabilitar_boton_sortear_terreno = True
+                deshabilitar_fase4 = False
 
-            return tabla_ganadores_data, idx_terreno+1, tabla_participante_ganador_data, pila_boletos_children, terreno_actual_label, boleto_ganador_label, terrenos_restantes_label, abrir_modal_descarga_resultados, {}, {'display':'none'}, tabla_ganadores_data, deshabilitar_boton_sortear_terreno
+            return tabla_ganadores_data, idx_terreno+1, tabla_participante_ganador_data, pila_boletos_children, terreno_actual_label, boleto_ganador_label, terrenos_restantes_label, abrir_modal_descarga_resultados, {}, {'display':'none'}, tabla_ganadores_data, deshabilitar_boton_sortear_terreno, deshabilitar_fase4
         else:
             return dash.no_update
 
@@ -1501,5 +1669,125 @@ def descargarResultadoGanadores(btn_descarga_resultados, diccionario_resultados_
     
     return dict(content=texto, filename="RESULTADOS_DEL_SORTEO.csv"), {}
 
+
+# *************************** CALLBACKS DE LA FASE 4 **************************
+# ----> Callback para revisar si es necesario introducir una nueva semilla para
+#       asignar el orden de prelación
+@app.callback(
+    Output('semilla-modal-fase4', 'is_open'),
+    [Input('link-fase4', 'n_clicks'), Input('ok-btn-modal-semilla-fase4', 'n_clicks')],
+    [State('semilla-modal-fase4', 'is_open'), State('info-semilla-fase4', 'data')],
+
+    prevent_initial_call=True
+)
+def mostrarModalSemillaOrdenPrelacion(link_fase4, ok_btn_modal_semilla, modal_esta_abierto, info_semilla):
+    contexto = dash.callback_context
+    if contexto.triggered:
+        # Se busca qué elemento disparó el callback
+        boton = contexto.triggered[0]['prop_id'].split('.')[0]
+
+        if boton == 'link-fase4':
+            if info_semilla == 'Sin semilla':
+                print("Se necesita una nueva semilla para el orden de prelación")
+                return not modal_esta_abierto
+        elif boton == 'ok-boton-modal-semilla-fase4':
+            print("Se cierra el modal de la semilla del orden de prelación")
+            return not modal_esta_abierto
+    else:
+        return modal_esta_abierto
+
+# ----> Callback para leer la semilla del modal y actualizarla en el objeto
+#       dcc.Store y en su correspondiente etiqueta.
+@app.callback(
+    [Output('label-semilla-fase4', 'children'), Output('info-semilla-fase4', 'data')],
+
+    [Input('link-fase4', 'n_clicks'), Input('ok-btn-modal-semilla-fase4', 'n_clicks')],
+
+    State('semilla-modal-form-fase4', 'children'), 
+
+    prevent_initial_call=True
+)
+def actualizarSemillaOrdenPrelacion(link_fase4, ok_btn_modal_semilla, modal_childrens):
+
+    contexto = dash.callback_context
+    if contexto.triggered:
+        # Se busca qué elemento disparó el callback
+        boton = contexto.triggered[0]['prop_id'].split('.')[0]
+
+        if boton == 'ok-btn-modal-semilla-fase4':
+            print("Leyendo la semilla de la fase 4...")
+            # Se obtiene la semilla introducida
+            dia = modal_childrens[0]['props']['children'][1]['props']['value']
+            mes = modal_childrens[1]['props']['children'][1]['props']['value']
+            anio = modal_childrens[2]['props']['children'][1]['props']['value']
+            hora = modal_childrens[3]['props']['children'][1]['props']['value']
+            minuto = modal_childrens[4]['props']['children'][1]['props']['value']
+
+            semilla = f"{dia.zfill(2)}/{mes.zfill(2)}/{anio} {hora.zfill(2)}:{minuto.zfill(2)}"
+            semilla_label = "Semilla: " + semilla
+
+            return semilla_label, semilla
+
+        elif boton == 'link-fase4':
+            print("se mantiene la semilla")
+            return dash.no_update
+    else:
+        return dash.no_update
+
+
+# --- > Callback para mezclar a los participantes no ganadores y mostrar el orden de prelación
+@app.callback(
+    [Output('tabla-orden-prelacion', 'data'), Output('info-orden-prelacion', 'data'),
+     Output('sorteo-prelacion-btn', 'children'), Output('sorteo-prelacion-btn', 'disabled'),
+     Output('descargar-orden-prelacion-btn', 'children'), Output('descargar-orden-prelacion-btn', 'disabled')],
+ 
+    Input('sorteo-prelacion-btn', 'n_clicks'),
+
+    [State('info-semilla-fase4', 'data'),
+     State('sorteo-boletos', 'data'), State('info-sorteo-terrenos', 'data')],
+    
+    prevent_initial_call=True
+)
+def calcularOrdenPrelacion(sorteo_prelacion_btn, info_semilla, sorteo_boletos_data, sorteo_terrenos_data):
+    # Se obtiene el DataFrame del sorteo de los numeros
+    df_sorteo_numeros = pd.DataFrame.from_dict(sorteo_boletos_data)
+    # Se obtiene el dataFrame del sorteo de los lotes
+    df_sorteo_lotes = pd.DataFrame.from_dict(sorteo_terrenos_data)
+
+    print("DF DEL SORTEO DE NUMEROS")
+    print(df_sorteo_numeros, "\n\n")
+
+    print("DF DEL SORTEO DE LOTES")
+    print(df_sorteo_lotes, "\n\n")
+
+    # Se obtiene la lista de números de empleado de todos los participantes
+    participantes_total = list(df_sorteo_numeros['num_empleado'])
+    # Se obtiene la lista de números de empleado de los participantes ganadores de los lotes
+    participantes_ganadores = list(df_sorteo_lotes['num_empleado'])
+
+    # Se obtiene el orden aleatorio de prelación
+    df_orden_prelacion = sorteoOrdenPrelacion(info_semilla, participantes_total, participantes_ganadores)
+
+    print("DF_DEL ORDEN DE PRELACION")
+    print(df_orden_prelacion)
+
+    return df_orden_prelacion.to_dict('records'), df_orden_prelacion.to_dict('records'), "El orden de prelación ya se ha establecido", True, "Descargar los resultados del orden de prelación", False
+
+
+# Callback para descargar los resultados del orden de prelación
+@app.callback(
+    [Output('descarga-resultado-orden-prelacion', 'data'), Output('link-resultados-fase4', 'style')],
+    Input('descargar-orden-prelacion-btn', 'n_clicks'),
+    State('info-orden-prelacion', 'data'),
+    prevent_initial_call=True
+)
+def descargarResultadoOrdenPrelacion(btn_descarga_resultados, diccionario_resultados_orden_prelacion): 
+    texto = "# Orden de prelación de los empleados de confianza no ganadores en el\n# \"Sorteo de 13 Lotes del Fraccionamiento Villa Universitaria\"\n\n"
+    texto += pd.DataFrame.from_dict(diccionario_resultados_orden_prelacion).to_csv(index=False)
+    return dict(content=texto,filename="ORDEN_DE_PRELACION.csv"), {}
+
+
 if __name__ == '__main__':
     app.run_server(debug=False, dev_tools_ui=False, dev_tools_props_check=False)
+
+
