@@ -161,9 +161,29 @@ def sorteoLotes(semilla, participantes, terrenos, numeros_mezclados):
 
 
 def sorteoOrdenPrelacion(semilla, participantes_total, participantes_ganadores):
+    """
+        Esta función establece aleatoriamente un orden de prelación con los participantes no
+        ganadores.
+
+        Parámetros
+        ----------
+        - semilla: Objeto <str> que se utilizará como semilla para los procesos aleatorios
+                   proporcionados por la librería 'random'.
+
+        - participantes_total: Objeto <list> que contiene la lista de todos los participantes.
+        
+        - participantes_ganadores: Objeto <list> que contiene la lista de los participantes ganadores.
+        
+        Regresa
+        -------
+        - df_orden_prelacion: Objeto pd.DataFrame que contiene el orden de prelación con el número 
+                              de empleado de los participantes no ganadores. Cuenta con la columna
+                              ['num_empleado'].
+    """
+
     # Se establece la semilla
     random.seed(semilla)
-    
+
     # Se excluyen de la lista de participantes los números de empleado que hayan sido ganadores
     participantes_prelacion = [p for p in participantes_total if p not in participantes_ganadores]
 
