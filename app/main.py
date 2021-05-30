@@ -1767,7 +1767,7 @@ def calcularOrdenPrelacion(sorteo_prelacion_btn, info_semilla, sorteo_boletos_da
     participantes_ganadores = list(df_sorteo_lotes['num_empleado'])
 
     # Se obtiene el orden aleatorio de prelación
-    df_orden_prelacion = sorteoOrdenPrelacion(info_semilla, participantes_total, participantes_ganadores)
+    df_orden_prelacion = sorteoListaPrelacion(info_semilla, participantes_total, participantes_ganadores)
 
     return df_orden_prelacion.to_dict('records'), df_orden_prelacion.to_dict('records'), "La lista de prelación ya se ha establecido", True, "Descargar la lista de prelación", False
 
