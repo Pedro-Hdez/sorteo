@@ -509,7 +509,7 @@ semilla_modal_etapa4 = html.Div(
     [        
         dbc.Modal(
             [
-                dbc.ModalHeader(html.H2("Establecer semilla para la definición del orden de prelación"), style={'background-color':'#3D7EF2', 'color':'white'}),
+                dbc.ModalHeader(html.H2("Establecer semilla para la definición de la lista de prelación"), style={'background-color':'#3D7EF2', 'color':'white'}),
 
                 dbc.ModalBody(children=[
                     dbc.Form(id='semilla-modal-form-etapa4',
@@ -578,7 +578,8 @@ semilla_modal_etapa4 = html.Div(
 # Tabla para mostrar La lista de los terrenos sin ganadores
 tabla_orden_prelacion = dash_table.DataTable(
     id='tabla-orden-prelacion',
-    columns=[{'name':'No. Empleado', 'id':'num_empleado'}],
+    columns=[{'name':'Prioridad', 'id':'prioridad'},
+             {'name':'No. Empleado', 'id':'num_empleado'}],
     merge_duplicate_headers=True,
     data=[],
     style_cell={
@@ -735,7 +736,7 @@ app.layout = html.Div([
 
 
     # ----- Para la etapa 4 -----
-    # Para almacenar la semilla para definir el orden de prelación
+    # Para almacenar la semilla para definir el lista de prelación
     dcc.Store(
         id='info-semilla-etapa4', data='Sin semilla'
     ),
@@ -760,7 +761,7 @@ app.layout = html.Div([
                                      disabled=True)),
             dbc.NavItem(dbc.NavLink("Etapa 3: Sorteo de Lotes", href="/etapa3", id='link-etapa3',
                                      disabled=True)),
-            dbc.NavItem(dbc.NavLink("Etapa 4: Definición del Orden de Prelación", href="/etapa4", id='link-etapa4',
+            dbc.NavItem(dbc.NavLink("Etapa 4: Definición de la Lista de Prelación", href="/etapa4", id='link-etapa4',
                                      disabled=True)),
         ],
         brand="Etapas del Sorteo",
@@ -991,7 +992,7 @@ app.layout = html.Div([
         semilla_modal_etapa4,
   
         html.Div(children=[
-            html.H1("ETAPA 4: DEFINICIÓN DEL ORDEN DE PRELACIÓN",style={'text-align':'center', 'padding':'1em'}),
+            html.H1("ETAPA 4: DEFINICIÓN DE LA LISTA DE PRELACIÓN",style={'text-align':'center', 'padding':'1em'}),
         ]),
 
         html.Div([
@@ -1018,13 +1019,13 @@ app.layout = html.Div([
         ]),
         
         html.Div([
-            html.H3('ORDEN DE PRELACIÓN', style={'text-align':'center', 'padding':'1em'}), 
+            html.H3('LISTA DE PRELACIÓN', style={'text-align':'center', 'padding':'1em'}), 
             tabla_orden_prelacion,
         ], style={"margin": "auto","width": "50%", 'padding':'1em'}),
 
         html.Div([
-            #dbc.Button("Descargar orden de prelación", id="descargar-orden-prelacion-btn", color="primary", className="mr-1", style={'float':'right'}),
-            dbc.Button("El orden de prelación no se ha establecido", id="descargar-orden-prelacion-btn", disabled=True, color="primary", className="mr-1", style={'float':'right'}),
+            #dbc.Button("Descargar lista de prelación", id="descargar-orden-prelacion-btn", color="primary", className="mr-1", style={'float':'right'}),
+            dbc.Button("La lista de prelación no se ha calculado", id="descargar-orden-prelacion-btn", disabled=True, color="primary", className="mr-1", style={'float':'right'}),
             dcc.Download(id="descarga-resultado-orden-prelacion")
         ], style={"margin": "auto","width": "55%", 'padding':'1em'}),
 
@@ -1091,8 +1092,8 @@ def mostrarInfoEtapa1(link_etapa1, tabla_participantes_etapa1, total_participant
         if not tabla_participantes_etapa1 and not total_participantes and not total_boletos:
             print("NO HAY NADA, SE VA A CALCULAR TODO")
             # ----- Creación del DataFrame de los participantes -----
-            df_participantes = pd.read_csv('./datos/PARTICIPANTES SORTEO 13 LOTES UNISON.csv')
-            df_participantes.columns = ['num_empleado', 'antiguedad', '']
+            df_participantes = pd.read_csv('./datos/PARTICIPANTES SORTEO 13 LOTES UNISON 31 de mayo de 2021.csv')
+            df_participantes.columns = ['num_empleado', 'antiguedad']
             df_participantes = df_participantes[['num_empleado', 'antiguedad']]
             df_participantes = df_participantes.sort_values(by=['antiguedad'], ascending=[False])
             print(df_participantes)
@@ -1672,7 +1673,7 @@ def descargarResultadoGanadores(btn_descarga_resultados, diccionario_resultados_
 
 # *************************** CALLBACKS DE LA ETAPA 4 **************************
 # ----> Callback para revisar si es necesario introducir una nueva semilla para
-#       asignar el orden de prelación
+#       asignar el lista de prelación
 @app.callback(
     Output('semilla-modal-etapa4', 'is_open'),
     [Input('link-etapa4', 'n_clicks'), Input('ok-btn-modal-semilla-etapa4', 'n_clicks')],
@@ -1688,10 +1689,10 @@ def mostrarModalSemillaOrdenPrelacion(link_etapa4, ok_btn_modal_semilla, modal_e
 
         if boton == 'link-etapa4':
             if info_semilla == 'Sin semilla':
-                print("Se necesita una nueva semilla para el orden de prelación")
+                print("Se necesita una nueva semilla para el lista de prelación")
                 return not modal_esta_abierto
         elif boton == 'ok-boton-modal-semilla-etapa4':
-            print("Se cierra el modal de la semilla del orden de prelación")
+            print("Se cierra el modal de la semilla del lista de prelación")
             return not modal_esta_abierto
     else:
         return modal_esta_abierto
@@ -1735,7 +1736,7 @@ def actualizarSemillaOrdenPrelacion(link_etapa4, ok_btn_modal_semilla, modal_chi
         return dash.no_update
 
 
-# --- > Callback para mezclar a los participantes no ganadores y mostrar el orden de prelación
+# --- > Callback para mezclar a los participantes no ganadores y mostrar el lista de prelación
 @app.callback(
     [Output('tabla-orden-prelacion', 'data'), Output('info-orden-prelacion', 'data'),
      Output('sorteo-prelacion-btn', 'children'), Output('sorteo-prelacion-btn', 'disabled'),
@@ -1768,13 +1769,10 @@ def calcularOrdenPrelacion(sorteo_prelacion_btn, info_semilla, sorteo_boletos_da
     # Se obtiene el orden aleatorio de prelación
     df_orden_prelacion = sorteoOrdenPrelacion(info_semilla, participantes_total, participantes_ganadores)
 
-    print("DF_DEL ORDEN DE PRELACION")
-    print(df_orden_prelacion)
-
-    return df_orden_prelacion.to_dict('records'), df_orden_prelacion.to_dict('records'), "El orden de prelación ya se ha establecido", True, "Descargar los resultados del orden de prelación", False
+    return df_orden_prelacion.to_dict('records'), df_orden_prelacion.to_dict('records'), "La lista de prelación ya se ha establecido", True, "Descargar la lista de prelación", False
 
 
-# Callback para descargar los resultados del orden de prelación
+# Callback para descargar los resultados del lista de prelación
 @app.callback(
     [Output('descarga-resultado-orden-prelacion', 'data'), Output('link-resultados-etapa4', 'style')],
     Input('descargar-orden-prelacion-btn', 'n_clicks'),
@@ -1782,9 +1780,9 @@ def calcularOrdenPrelacion(sorteo_prelacion_btn, info_semilla, sorteo_boletos_da
     prevent_initial_call=True
 )
 def descargarResultadoOrdenPrelacion(btn_descarga_resultados, diccionario_resultados_orden_prelacion): 
-    texto = "# Orden de prelación de los empleados de confianza no ganadores en el\n# \"Sorteo de Trece Lotes del Fraccionamiento Villa Universitaria\"\n\n"
+    texto = "# Lista de prelación de los empleados de confianza que no resultaron ganadores en el\n# \"Sorteo de Trece Lotes del Fraccionamiento Villa Universitaria\"\n\n"
     texto += pd.DataFrame.from_dict(diccionario_resultados_orden_prelacion).to_csv(index=False)
-    return dict(content=texto,filename="ORDEN_DE_PRELACION.csv"), {}
+    return dict(content=texto,filename="LISTA_DE_PRELACION.csv"), {}
 
 
 if __name__ == '__main__':
