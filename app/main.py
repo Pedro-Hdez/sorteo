@@ -15,7 +15,7 @@ import math
 import time
 
 
-from sorteo import sorteoNumeros, sorteoLotes, sorteoOrdenPrelacion
+from sorteo import sorteoNumeros, sorteoLotes, sorteoListaPrelacion
 
 external_stylesheets = [dbc.themes.COSMO]
 
